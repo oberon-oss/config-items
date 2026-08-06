@@ -66,6 +66,7 @@ class ConfigurationItemRegistryTest {
 
     @Test
     void testRegister_NullItem() {
+        //noinspection DataFlowIssue passing null is intentional
         assertThrows(RuntimeException.class, () -> registry.register(null));
     }
 
