@@ -11,7 +11,7 @@ jobs:
         with:
             java-version: '25'
             release-maven-profiles: central-release,generate-javadoc-and-source
-            sonar-project-key: ???
+            sonar-project-key: oberon-oss_config-items
             sonar-quality-gate-blocking: true
         secrets:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

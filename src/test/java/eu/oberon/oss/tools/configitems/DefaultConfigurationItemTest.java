@@ -224,7 +224,7 @@ class DefaultConfigurationItemTest {
     void testLoad_NullValueInPreferences() {
         ConfigurationItem<String> item = DefaultConfigurationItem.getInstance("test", String.class);
         when(preferences.get("test", null)).thenReturn("exists");
-        when(preferences.get("test", (String) null)).thenReturn(null);
+        when(preferences.get("test", null)).thenReturn(null);
         
         item.load(preferences);
         assertThat(item.getConfigItemValue()).isNull();
@@ -232,6 +232,7 @@ class DefaultConfigurationItemTest {
 
     @Test
     void testPrivateConstructorThrowsException() throws Exception {
+        //noinspection rawtypes
         java.lang.reflect.Constructor<DefaultConfigurationItem> constructor = DefaultConfigurationItem.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         assertThatThrownBy(constructor::newInstance)
