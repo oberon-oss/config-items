@@ -168,7 +168,7 @@ public final class DefaultConfigurationItem<A, P> implements ConfigurationItem<A
         Enum enumValue = (Enum) defaultValue;
         Class enumType = enumValue.getDeclaringClass();
 
-        return (ConfigurationItem<T>) getEnumInstance(configItemName, enumType, enumValue);
+        return getEnumInstance(configItemName, enumType, enumValue);
     }
 
     /**
@@ -362,7 +362,7 @@ public final class DefaultConfigurationItem<A, P> implements ConfigurationItem<A
         throw new IllegalStateException("Unexpected/Unsupported data type: " + storageType);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","java:S3776"})
     private P loadPreferenceValue(Preferences preferences) {
         P storageDefaultValue = defaultValue == null ? null : toStorageType.apply(defaultValue);
 

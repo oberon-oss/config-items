@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.prefs.Preferences;
 
@@ -95,9 +96,8 @@ public class ConfigurationItemRegistry {
      */
     public <A> void setItemValue(@NotNull String name, @NotNull A value) {
         ConfigurationItem<A> item = getItem(name);
-        if (item != null) {
-            item.setConfigItemValue(value);
-        }
+        Objects.requireNonNull(item, "Configuration item not found: " + name);
+        item.setConfigItemValue(value);
     }
 
     /**

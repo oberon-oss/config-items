@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -90,8 +91,8 @@ class DefaultConfigurationItemTest {
 
     @Test
     void testGetConvertedInstance_LocalDateList() {
-        List<LocalDate> defaultDates = List.of(LocalDate.of(2023, 1, 1));
-        List<LocalDate> newDates = List.of(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
+        List<LocalDate> defaultDates = List.of(LocalDate.of(2023, Month.JANUARY, 1));
+        List<LocalDate> newDates = List.of(LocalDate.of(2024, Month.JANUARY, 1), LocalDate.of(2024, Month.DECEMBER, 31));
         String storedValue = "2024-01-01\t2024-12-31";
         String defaultStoredValue = "2023-01-01";
 
@@ -100,7 +101,7 @@ class DefaultConfigurationItemTest {
                 String.class,
                 defaultDates,
                 list -> list.stream().map(LocalDate::toString).collect(Collectors.joining("\t")),
-                str -> Arrays.stream(str.split("\t")).map(LocalDate::parse).collect(Collectors.toList())
+                str -> Arrays.stream(str.split("\t")).map(LocalDate::parse).toList()
         );
 
         item.setConfigItemValue(newDates);

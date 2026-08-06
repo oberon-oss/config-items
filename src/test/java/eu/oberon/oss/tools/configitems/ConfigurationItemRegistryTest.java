@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.prefs.Preferences;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +33,7 @@ class ConfigurationItemRegistryTest {
 
         String value = registry.getItemValue("test");
         assertThat(value).isNull();
-        
+
         registry.setItemValue("test", "newVal");
         String newValue = registry.getItemValue("test");
         assertThat(newValue).isEqualTo("newVal");
@@ -40,10 +41,39 @@ class ConfigurationItemRegistryTest {
     }
 
     @Test
+    void testRegisterDuplicate_ThrowsException() {
+        ConfigurationItem<String> item1 = DefaultConfigurationItem.getInstance("test", String.class, "def1");
+        ConfigurationItem<String> item2 = DefaultConfigurationItem.getInstance("test", String.class, "def2");
+
+        registry.register(item1);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> registry.register(item2));
+        assertThat(exception.getMessage()).contains("Item with name 'test' already exists");
+    }
+
+    @Test
+    void testRegisterDuplicate_Replace() {
+        ConfigurationItem<String> item1 = DefaultConfigurationItem.getInstance("test", String.class, "def1");
+        ConfigurationItem<String> item2 = DefaultConfigurationItem.getInstance("test", String.class, "def2");
+
+        registry.register(item1);
+        registry.register(item2, true);
+
+        // Verify that setting value updates item2, not item1
+        registry.setItemValue("test", "val2");
+        assertThat(item2.getConfigItemValue()).isEqualTo("val2");
+        assertThat(item1.getConfigItemValue()).isNotEqualTo("val2");
+    }
+
+    @Test
+    void testRegister_NullItem() {
+        assertThrows(RuntimeException.class, () -> registry.register(null));
+    }
+
+    @Test
     void testLoadData() {
         ConfigurationItem<String> item1 = DefaultConfigurationItem.getInstance("item1", String.class, "def1");
         ConfigurationItem<Integer> item2 = DefaultConfigurationItem.getInstance("item2", Integer.class, 2);
-        
+
         registry.register(item1);
         registry.register(item2);
 
@@ -70,15 +100,15 @@ class ConfigurationItemRegistryTest {
 
         verify(preferences).put("test", "val");
     }
-    
+
     @Test
     void testGetItemValue_NotFound() {
         Object value = registry.getItemValue("nonexistent");
         assertThat(value).isNull();
     }
-    
+
     @Test
     void testSetItemValue_NotFound() {
-        registry.setItemValue("nonexistent", "value");
+        assertThrows(NullPointerException.class, () -> registry.setItemValue("nonexistent", "value"));
     }
 }
