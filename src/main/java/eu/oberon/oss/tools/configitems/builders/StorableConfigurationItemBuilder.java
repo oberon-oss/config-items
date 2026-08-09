@@ -1,5 +1,8 @@
-package eu.oberon.oss.tools.configitems;
+package eu.oberon.oss.tools.configitems.builders;
 
+import eu.oberon.oss.tools.configitems.items.DefaultStorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.items.StorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.StorageProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -83,18 +86,6 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
     StorableConfigurationItemBuilder<I, K, A, P> setToExtKey(@NotNull Function<I, K> toExtKey);
 
     /**
-     * Sets the conversion function from an external key to an internal key. This function is used to transform the external key representation to the internal
-     * key representation.
-     *
-     * @param toIntKey the function that converts from external key type to internal key type
-     *
-     * @return the builder instance for method chaining
-     *
-     * @since 1.0.0
-     */
-    StorableConfigurationItemBuilder<I, K, A, P> setToIntKey(@NotNull Function<K, I> toIntKey);
-
-    /**
      * Sets the unique identifier for this configuration item. The item ID is used to uniquely identify this configuration item within the system.
      *
      * @param itemID the unique identifier in internal key type format
@@ -128,6 +119,28 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      * @since 1.0.0
      */
     StorableConfigurationItemBuilder<I, K, A, P> setToStorageType(@NotNull Function<A, P> toStorageType);
+
+    /**
+     * Specifies if default converters for data and keys are to be generated in certain conditions.
+     *
+     * @param autoGeneration if true, default converters will be generated; if false, no default converters will be generated
+     *
+     * @return the builder instance for method chaining
+     *
+     * @since 1.0.0
+     */
+    StorableConfigurationItemBuilder<I, K, A, P> setAutoGeneration(boolean autoGeneration);
+
+    /**
+     * Specifies the storage provider to be used for storing and retrieving configuration items.
+     *
+     * @param storageProvider the storage provider to be used
+     *
+     * @return the builder instance for method chaining
+     *
+     * @since 1.0.0
+     */
+    StorableConfigurationItemBuilder<I, K, A, P> setStorageProvider(@NotNull StorageProvider storageProvider);
 
     /**
      * Builds and returns a new instance of {@link DefaultStorableConfigurationItem} with all configured properties. This method performs validation to ensure

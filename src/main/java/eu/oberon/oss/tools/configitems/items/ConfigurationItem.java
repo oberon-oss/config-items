@@ -1,5 +1,6 @@
-package eu.oberon.oss.tools.configitems;
+package eu.oberon.oss.tools.configitems.items;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.prefs.Preferences;
@@ -14,13 +15,13 @@ import java.util.prefs.Preferences;
  * @author TigerLilly64
  * @since 1.0.0
  */
-public interface ConfigurationItemData<I, A> {
+public interface ConfigurationItem<I, A> {
     /**
      * Retrieves the name of the configuration item.
      *
      * @return the name of the configuration item.
      */
-    I getKey();
+    @NotNull I getKey();
 
     /**
      * Sets the value of the configuration item.
@@ -51,4 +52,5 @@ public interface ConfigurationItemData<I, A> {
      * @since 1.0.0
      */
     @Nullable A getDefaultValue();
+
 }

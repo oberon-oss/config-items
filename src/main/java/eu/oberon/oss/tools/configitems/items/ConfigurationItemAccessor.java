@@ -1,10 +1,20 @@
-package eu.oberon.oss.tools.configitems;
+package eu.oberon.oss.tools.configitems.items;
 
 import java.util.function.Function;
 
-public interface StorableConfigurationItem<I,K,A,P> {
-    ConfigurationItemData<I,A> getConfigurationItemData();
-
+/**
+ * Provides mechanisms for accessing and transforming configuration item data, specifically facilitating type conversion between internal keys, external keys,
+ * application data, and storage representations.
+ *
+ * @param <I> The type representing the internal key used for identification.
+ * @param <K> The type representing the external key used for mapping or interaction.
+ * @param <A> The type of the data as used by the application.
+ * @param <P> The type of the data as stored in persistent storage.
+ *
+ * @author TigerLilly64
+ * @since 1.0.0
+ */
+public interface ConfigurationItemAccessor<I, K, A, P> {
     /**
      * Returns the internal key type.
      *
@@ -12,7 +22,7 @@ public interface StorableConfigurationItem<I,K,A,P> {
      *
      * @since 1.0.0
      */
-    Class<I> getIntKeyType();
+    Class<I> intKeyType();
 
     /**
      * Returns the external key type.
@@ -21,7 +31,7 @@ public interface StorableConfigurationItem<I,K,A,P> {
      *
      * @since 1.0.0
      */
-    Class<K> getExtKeyType();
+    Class<K> extKeyType();
 
     /**
      * Returns the application data type.
@@ -30,7 +40,7 @@ public interface StorableConfigurationItem<I,K,A,P> {
      *
      * @since 1.0.0
      */
-    Class<A> getApplicationDataType();
+    Class<A> applicationDataType();
 
     /**
      * Returns the storage type.
@@ -39,7 +49,7 @@ public interface StorableConfigurationItem<I,K,A,P> {
      *
      * @since 1.0.0
      */
-    Class<P> getStorageType();
+    Class<P> storageType();
 
     /**
      * Returns the conversion function from an internal key to an external key.
@@ -48,16 +58,7 @@ public interface StorableConfigurationItem<I,K,A,P> {
      *
      * @since 1.0.0
      */
-    Function<I, K> getToExtKey();
-
-    /**
-     * Returns the conversion function from an external key to an internal key.
-     *
-     * @return The conversion function from an external key to an internal key.
-     *
-     * @since 1.0.0
-     */
-    Function<K, I> getToIntKey();
+    Function<I, K> toExtKey();
 
     /**
      * Returns the conversion function from a storage type to an application data type.
@@ -66,7 +67,7 @@ public interface StorableConfigurationItem<I,K,A,P> {
      *
      * @since 1.0.0
      */
-    Function<P, A> getToDataType();
+    Function<P, A> toDataType();
 
     /**
      * Returns the conversion function from an application data type to a storage type.
@@ -75,23 +76,5 @@ public interface StorableConfigurationItem<I,K,A,P> {
      *
      * @since 1.0.0
      */
-    Function<A, P> getToStorageType();
-
-    /**
-     * Returns the item ID.
-     *
-     * @return The item ID.
-     *
-     * @since 1.0.0
-     */
-    I getItemID();
-
-    /**
-     * Returns the default value.
-     *
-     * @return The default value.
-     *
-     * @since 1.0.0
-     */
-    A getDefaultValue();
+    Function<A, P> toStorageType();
 }
