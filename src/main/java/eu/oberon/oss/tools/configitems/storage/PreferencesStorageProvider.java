@@ -68,26 +68,30 @@ public class PreferencesStorageProvider implements StorageProvider {
 
         String key = String.valueOf(accessor.toExtKey().apply(storableItem.getKey()));
         P defaultValue = accessor.toStorageType().apply(storableItem.getDefaultValue());
-        P storedValue = performLoad(key, defaultValue);
+        P storedValue = performLoad(key, accessor.storageType(), defaultValue);
 
         storableItem.setCurrentValue(accessor.toDataType().apply(storedValue));
     }
 
+    private boolean containsKey(String key) {
+        return preferences.get(key, null) != null;
+    }
+
     @SuppressWarnings("unchecked")
-    private <P> P performLoad(String key, P defaultValue) {
-        if (defaultValue == null) {
-            return null;
+    private <P> P performLoad(String key, Class<P> storageType, P defaultValue) {
+        if (!containsKey(key)) {
+            return defaultValue;
         }
 
-        return switch (defaultValue) {
-            case String string -> (P) preferences.get(key, string);
-            case Integer integer -> (P) Integer.valueOf(preferences.getInt(key, integer));
-            case Boolean booleanValue -> (P) Boolean.valueOf(preferences.getBoolean(key, booleanValue));
-            case Long longValue -> (P) Long.valueOf(preferences.getLong(key, longValue));
-            case Float floatValue -> (P) Float.valueOf(preferences.getFloat(key, floatValue));
-            case Double doubleValue -> (P) Double.valueOf(preferences.getDouble(key, doubleValue));
-            case byte[] bytes -> (P) preferences.getByteArray(key, bytes);
-            default -> throw new IllegalArgumentException("Unsupported type: " + defaultValue.getClass().getName());
+        return switch (storageType.getName()) {
+            case "java.lang.String" -> (P) preferences.get(key, (String) defaultValue);
+            case "java.lang.Integer" -> (P) Integer.valueOf(preferences.getInt(key, defaultValue == null ? 0 : (Integer) defaultValue));
+            case "java.lang.Boolean" -> (P) Boolean.valueOf(preferences.getBoolean(key, defaultValue != null && (Boolean) defaultValue));
+            case "java.lang.Long" -> (P) Long.valueOf(preferences.getLong(key, defaultValue == null ? 0L : (Long) defaultValue));
+            case "java.lang.Float" -> (P) Float.valueOf(preferences.getFloat(key, defaultValue == null ? 0.0F : (Float) defaultValue));
+            case "java.lang.Double" -> (P) Double.valueOf(preferences.getDouble(key, defaultValue == null ? 0.0D : (Double) defaultValue));
+            case "[B" -> (P) preferences.getByteArray(key, (byte[]) defaultValue);
+            default -> throw new IllegalArgumentException("Unsupported type: " + storageType.getName());
         };
     }
 

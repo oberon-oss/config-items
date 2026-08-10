@@ -21,10 +21,6 @@ public final class DefaultConfigurationItem<I, A> implements ConfigurationItem<I
     private final A defaultValue;
     private A currentValue;
 
-    private DefaultConfigurationItem() {
-        throw new UnsupportedOperationException("This constructor is not supported.");
-    }
-
     /**
      * Creates a new {@link ConfigurationItem}.
      *

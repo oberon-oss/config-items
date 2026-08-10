@@ -27,7 +27,7 @@ import java.util.function.Function;
  * @author TigerLilly64
  * @since 1.0.0
  */
-public class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableConfigurationItemBuilder<I, K, A, P> {
+class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableConfigurationItemBuilder<I, K, A, P> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultStorableConfigurationItemBuilder.class);
     private static final ConvertersRegistry CONVERTERS_REGISTRY = new ConvertersRegistry();
 
@@ -48,24 +48,13 @@ public class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements Stor
 
     private boolean autoGeneration = true;
 
-    private DefaultStorableConfigurationItemBuilder() {
-        // keep Javadoc happy
-    }
-
     /**
-     * Creates a new instance of {@link DefaultStorableConfigurationItemBuilder}.
-     *
-     * @param <I> the type of the item ID
-     * @param <K> the type of the external key
-     * @param <A> the type of the application data
-     * @param <P> the type of the storage data
-     *
-     * @return a new instance of {@link DefaultStorableConfigurationItemBuilder}
+     * Default constructor.
      *
      * @since 1.0.0
      */
-    public static <I, K, A, P> StorableConfigurationItemBuilder<I, K, A, P> getInstance() {
-        return new DefaultStorableConfigurationItemBuilder<>();
+    DefaultStorableConfigurationItemBuilder() {
+        // keep Javadoc happy
     }
 
     @Override
@@ -114,12 +103,14 @@ public class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements Stor
      * if the value specified for the 'defaultValue' is not {@code null}, the 'applicationDataType' (if {@code null}) will be set to the class of the
      * 'defaultValue'.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public DefaultStorableConfigurationItemBuilder<I, K, A, P> setDefaultValue(@Nullable A defaultValue) {
         this.defaultValue = defaultValue;
         if (this.defaultValue != null && applicationDataType == null) {
-            //noinspection unchecked
             applicationDataType = (Class<A>) defaultValue.getClass();
+            if (storageType == null)
+                storageType = (Class<P>) defaultValue.getClass();
         }
         return this;
     }
