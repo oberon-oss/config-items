@@ -1,7 +1,6 @@
 package eu.oberon.oss.tools.configitems.storage;
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
-import eu.oberon.oss.tools.configitems.items.StorableConfigurationItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;

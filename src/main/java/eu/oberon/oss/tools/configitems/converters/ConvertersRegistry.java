@@ -80,7 +80,7 @@ public final class ConvertersRegistry {
         Objects.requireNonNull(converter, "Parameter: converter");
         Converter<?> existingConverter = getConverterForClassType(converter.getTypeClass());
         if (existingConverter != null) {
-            LOGGER.debug("Replacing already registered converter for type {}", converter.getTypeClass());
+            LOGGER.info("Replacing already registered converter for type {}", converter.getTypeClass());
             converters.remove(existingConverter);
         }
         converters.add(converter);

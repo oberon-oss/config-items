@@ -1,6 +1,5 @@
-package eu.oberon.oss.tools.configitems.builders;
+package eu.oberon.oss.tools.configitems.items;
 
-import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
 
 import java.util.function.Function;

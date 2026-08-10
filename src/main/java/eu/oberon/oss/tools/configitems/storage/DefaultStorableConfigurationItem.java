@@ -1,6 +1,7 @@
-package eu.oberon.oss.tools.configitems.items;
+package eu.oberon.oss.tools.configitems.storage;
 
-import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
+import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

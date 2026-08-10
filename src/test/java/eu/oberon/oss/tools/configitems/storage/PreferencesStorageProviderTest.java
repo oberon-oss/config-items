@@ -3,7 +3,6 @@ package eu.oberon.oss.tools.configitems.storage;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilderFactory;
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
-import eu.oberon.oss.tools.configitems.items.StorableConfigurationItem;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

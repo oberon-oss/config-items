@@ -2,7 +2,7 @@ package eu.oberon.oss.tools.configitems;
 
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilderFactory;
-import eu.oberon.oss.tools.configitems.items.StorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.PreferencesStorageProvider;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
 import org.junit.jupiter.api.AfterEach;

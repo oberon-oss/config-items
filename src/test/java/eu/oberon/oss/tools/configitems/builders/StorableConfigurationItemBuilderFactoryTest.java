@@ -1,6 +1,6 @@
 package eu.oberon.oss.tools.configitems.builders;
 
-import eu.oberon.oss.tools.configitems.items.StorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,5 @@
-package eu.oberon.oss.tools.configitems.builders;
+package eu.oberon.oss.tools.configitems.items;
 
-import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

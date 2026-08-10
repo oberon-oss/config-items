@@ -2,10 +2,9 @@ package eu.oberon.oss.tools.configitems.builders;
 
 import eu.oberon.oss.tools.configitems.converters.Converter;
 import eu.oberon.oss.tools.configitems.converters.ConvertersRegistry;
-import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
-import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
-import eu.oberon.oss.tools.configitems.items.DefaultStorableConfigurationItem;
-import eu.oberon.oss.tools.configitems.items.StorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.items.*;
+import eu.oberon.oss.tools.configitems.storage.DefaultStorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,7 +76,7 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
         if (intKeyType == null) {
             //noinspection unchecked
             intKeyType = (Class<I>) itemID.getClass();
-            LOGGER.info("Internal key type set to class of item ID: {}", intKeyType);
+            LOGGER.debug("Internal key type set to class of item ID: {}", intKeyType);
         }
         return this;
     }
@@ -109,8 +108,11 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
         this.defaultValue = defaultValue;
         if (this.defaultValue != null && applicationDataType == null) {
             applicationDataType = (Class<A>) defaultValue.getClass();
-            if (storageType == null)
+            LOGGER.debug("Application data type set to class of defaultValue: {}", applicationDataType);
+            if (storageType == null) {
+                LOGGER.debug("Storage type set to class of item defaultValue: {}", applicationDataType);
                 storageType = (Class<P>) defaultValue.getClass();
+            }
         }
         return this;
     }
