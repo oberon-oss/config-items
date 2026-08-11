@@ -11,7 +11,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
@@ -25,47 +28,19 @@ class PreferencesStorageProviderTest {
     private StorableConfigurationItemBuilderFactory builderFactory;
 
     static Stream<Arguments> supportedStorageTypes() {
-        return Stream.of(
-                Arguments.of(String.class),
-                Arguments.of(Integer.class),
-                Arguments.of(Long.class),
-                Arguments.of(Float.class),
-                Arguments.of(Double.class),
-                Arguments.of(Boolean.class),
-                Arguments.of(byte[].class)
-        );
+        return Stream.of(Arguments.of(String.class), Arguments.of(Integer.class), Arguments.of(Long.class), Arguments.of(Float.class), Arguments.of(Double.class), Arguments.of(Boolean.class), Arguments.of(byte[].class));
     }
 
     static Stream<Arguments> unsupportedStorageTypes() {
-        return Stream.of(
-                Arguments.of(Byte.class),
-                Arguments.of(Short.class),
-                Arguments.of(Character.class),
-                Arguments.of(Object.class),
-                Arguments.of(UUID.class)
-        );
+        return Stream.of(Arguments.of(Byte.class), Arguments.of(Short.class), Arguments.of(Character.class), Arguments.of(Object.class), Arguments.of(UUID.class));
     }
 
     static Stream<Arguments> supportedRoundTripValues() {
-        return Stream.of(
-                Arguments.of("string-key", String.class, "default", "stored"),
-                Arguments.of("integer-key", Integer.class, 123, 456),
-                Arguments.of("long-key", Long.class, 123L, 456L),
-                Arguments.of("float-key", Float.class, 123.5F, 456.5F),
-                Arguments.of("double-key", Double.class, 123.5D, 456.5D),
-                Arguments.of("boolean-key", Boolean.class, false, true),
-                Arguments.of("bytes-key", byte[].class, new byte[]{1, 2, 3}, new byte[]{4, 5, 6})
-        );
+        return Stream.of(Arguments.of("string-key", String.class, "default", "stored"), Arguments.of("integer-key", Integer.class, 123, 456), Arguments.of("long-key", Long.class, 123L, 456L), Arguments.of("float-key", Float.class, 123.5F, 456.5F), Arguments.of("double-key", Double.class, 123.5D, 456.5D), Arguments.of("boolean-key", Boolean.class, false, true), Arguments.of("bytes-key", byte[].class, new byte[]{1, 2, 3}, new byte[]{4, 5, 6}));
     }
 
     static Stream<Arguments> invalidStoredPrimitiveValues() {
-        return Stream.of(
-                Arguments.of("invalid-integer-key", Integer.class, 123),
-                Arguments.of("invalid-long-key", Long.class, 123L),
-                Arguments.of("invalid-float-key", Float.class, 123.5F),
-                Arguments.of("invalid-double-key", Double.class, 123.5D),
-                Arguments.of("invalid-boolean-key", Boolean.class, false)
-        );
+        return Stream.of(Arguments.of("invalid-integer-key", Integer.class, 123), Arguments.of("invalid-long-key", Long.class, 123L), Arguments.of("invalid-float-key", Float.class, 123.5F), Arguments.of("invalid-double-key", Double.class, 123.5D), Arguments.of("invalid-boolean-key", Boolean.class, false));
     }
 
     @BeforeEach
@@ -144,11 +119,7 @@ class PreferencesStorageProviderTest {
 
     @Test
     void loadWithNullDefaultAndNoStoredValueSetsCurrentValueToNull() {
-        StorableConfigurationItem<String, String, String, String> item = builderFactory.<String, String, String, String>getInstance()
-                .setItemID("null-default-missing-key")
-                .setApplicationDataType(String.class)
-                .setStorageType(String.class)
-                .build();
+        StorableConfigurationItem<String, String, String, String> item = builderFactory.<String, String, String, String>getInstance().setItemID("null-default-missing-key").setApplicationDataType(String.class).setStorageType(String.class).build();
 
         item.setCurrentValue("temporary");
         item.load();
@@ -160,11 +131,7 @@ class PreferencesStorageProviderTest {
     void loadWithNullDefaultUsesStoredStringWhenPresent() {
         preferences.put("null-default-existing-string-key", "stored-value");
 
-        StorableConfigurationItem<String, String, String, String> item = builderFactory.<String, String, String, String>getInstance()
-                .setItemID("null-default-existing-string-key")
-                .setApplicationDataType(String.class)
-                .setStorageType(String.class)
-                .build();
+        StorableConfigurationItem<String, String, String, String> item = builderFactory.<String, String, String, String>getInstance().setItemID("null-default-existing-string-key").setApplicationDataType(String.class).setStorageType(String.class).build();
 
         item.load();
 
@@ -175,11 +142,7 @@ class PreferencesStorageProviderTest {
     void loadWithNullDefaultUsesStoredIntegerWhenPresent() {
         preferences.putInt("null-default-existing-integer-key", 123);
 
-        StorableConfigurationItem<String, String, Integer, Integer> item = builderFactory.<String, String, Integer, Integer>getInstance()
-                .setItemID("null-default-existing-integer-key")
-                .setApplicationDataType(Integer.class)
-                .setStorageType(Integer.class)
-                .build();
+        StorableConfigurationItem<String, String, Integer, Integer> item = builderFactory.<String, String, Integer, Integer>getInstance().setItemID("null-default-existing-integer-key").setApplicationDataType(Integer.class).setStorageType(Integer.class).build();
 
         item.load();
 
@@ -190,11 +153,7 @@ class PreferencesStorageProviderTest {
     void loadWithNullDefaultUsesStoredBooleanWhenPresent() {
         preferences.putBoolean("null-default-existing-boolean-key", true);
 
-        StorableConfigurationItem<String, String, Boolean, Boolean> item = builderFactory.<String, String, Boolean, Boolean>getInstance()
-                .setItemID("null-default-existing-boolean-key")
-                .setApplicationDataType(Boolean.class)
-                .setStorageType(Boolean.class)
-                .build();
+        StorableConfigurationItem<String, String, Boolean, Boolean> item = builderFactory.<String, String, Boolean, Boolean>getInstance().setItemID("null-default-existing-boolean-key").setApplicationDataType(Boolean.class).setStorageType(Boolean.class).build();
 
         item.load();
         assertNotNull(item.getCurrentValue());
@@ -205,11 +164,7 @@ class PreferencesStorageProviderTest {
     void loadWithNullDefaultUsesStoredLongWhenPresent() {
         preferences.putLong("null-default-existing-long-key", 123L);
 
-        StorableConfigurationItem<String, String, Long, Long> item = builderFactory.<String, String, Long, Long>getInstance()
-                .setItemID("null-default-existing-long-key")
-                .setApplicationDataType(Long.class)
-                .setStorageType(Long.class)
-                .build();
+        StorableConfigurationItem<String, String, Long, Long> item = builderFactory.<String, String, Long, Long>getInstance().setItemID("null-default-existing-long-key").setApplicationDataType(Long.class).setStorageType(Long.class).build();
 
         item.load();
 
@@ -220,11 +175,7 @@ class PreferencesStorageProviderTest {
     void loadWithNullDefaultUsesStoredFloatWhenPresent() {
         preferences.putFloat("null-default-existing-float-key", 123.5F);
 
-        StorableConfigurationItem<String, String, Float, Float> item = builderFactory.<String, String, Float, Float>getInstance()
-                .setItemID("null-default-existing-float-key")
-                .setApplicationDataType(Float.class)
-                .setStorageType(Float.class)
-                .build();
+        StorableConfigurationItem<String, String, Float, Float> item = builderFactory.<String, String, Float, Float>getInstance().setItemID("null-default-existing-float-key").setApplicationDataType(Float.class).setStorageType(Float.class).build();
 
         item.load();
 
@@ -235,11 +186,7 @@ class PreferencesStorageProviderTest {
     void loadWithNullDefaultUsesStoredDoubleWhenPresent() {
         preferences.putDouble("null-default-existing-double-key", 123.5D);
 
-        StorableConfigurationItem<String, String, Double, Double> item = builderFactory.<String, String, Double, Double>getInstance()
-                .setItemID("null-default-existing-double-key")
-                .setApplicationDataType(Double.class)
-                .setStorageType(Double.class)
-                .build();
+        StorableConfigurationItem<String, String, Double, Double> item = builderFactory.<String, String, Double, Double>getInstance().setItemID("null-default-existing-double-key").setApplicationDataType(Double.class).setStorageType(Double.class).build();
 
         item.load();
 
@@ -250,11 +197,7 @@ class PreferencesStorageProviderTest {
     void loadWithNullDefaultUsesStoredByteArrayWhenPresent() {
         preferences.putByteArray("null-default-existing-byte-array-key", new byte[]{1, 2, 3});
 
-        StorableConfigurationItem<String, String, byte[], byte[]> item = builderFactory.<String, String, byte[], byte[]>getInstance()
-                .setItemID("null-default-existing-byte-array-key")
-                .setApplicationDataType(byte[].class)
-                .setStorageType(byte[].class)
-                .build();
+        StorableConfigurationItem<String, String, byte[], byte[]> item = builderFactory.<String, String, byte[], byte[]>getInstance().setItemID("null-default-existing-byte-array-key").setApplicationDataType(byte[].class).setStorageType(byte[].class).build();
 
         item.load();
 
@@ -291,11 +234,7 @@ class PreferencesStorageProviderTest {
     void invalidStoredBooleanValueFallsBackToFalseWhenDefaultValueIsNull() {
         preferences.put("invalid-boolean-null-default-key", "not-a-boolean");
 
-        StorableConfigurationItem<String, String, Boolean, Boolean> item = builderFactory.<String, String, Boolean, Boolean>getInstance()
-                .setItemID("invalid-boolean-null-default-key")
-                .setApplicationDataType(Boolean.class)
-                .setStorageType(Boolean.class)
-                .build();
+        StorableConfigurationItem<String, String, Boolean, Boolean> item = builderFactory.<String, String, Boolean, Boolean>getInstance().setItemID("invalid-boolean-null-default-key").setApplicationDataType(Boolean.class).setStorageType(Boolean.class).build();
 
         item.load();
 
@@ -305,10 +244,7 @@ class PreferencesStorageProviderTest {
 
     @Test
     void unsupportedStorageTypeIsRejectedByBuilder() {
-        StorableConfigurationItemBuilder<String, String, Byte, Byte> builder = builderFactory.<String, String, Byte, Byte>getInstance()
-                .setItemID("unsupported-byte-key")
-                .setApplicationDataType(Byte.class)
-                .setStorageType(Byte.class);
+        StorableConfigurationItemBuilder<String, String, Byte, Byte> builder = builderFactory.<String, String, Byte, Byte>getInstance().setItemID("unsupported-byte-key").setApplicationDataType(Byte.class).setStorageType(Byte.class);
 
         assertThrows(IllegalArgumentException.class, builder::build);
     }
@@ -323,11 +259,40 @@ class PreferencesStorageProviderTest {
         assertEquals("Unsupported type: java.lang.Object", exception.getMessage());
     }
 
+    @Test
+    void testCustomApplicationDataValueClass() {
+        StorableConfigurationItemBuilder<IdentityEnum, String, CustomConfigItem, String> builder;
+        StorableConfigurationItem<IdentityEnum, String, CustomConfigItem, String> item;
+
+        UUID uuid = UUID.randomUUID();
+        LocalDate localDate = LocalDate.of(2026, Month.AUGUST, 11);
+        String description = "test";
+
+        builder = builderFactory.getInstance();
+        CustomConfigItem customConfigItem = new CustomConfigItem(uuid, localDate, description);
+
+        builder.setItemID(IdentityEnum.CUSTOM_CONFIG_ITEM).setApplicationDataType(CustomConfigItem.class).setStorageType(String.class).setToDataType(CustomConfigItem.TO_DATA_TYPE).setToStorageType(CustomConfigItem.TO_STORAGE_TYPE).build();
+
+
+        item = assertDoesNotThrow(builder::build);
+        assertNotNull(item);
+
+        item.setCurrentValue(customConfigItem);
+        item.save();
+        item.load();
+        assertNotNull(item.getCurrentValue());
+
+        // The object should not be the same, as the load() call creates a new instance from the storage
+        // THis behavior can be changed by overriding the hashcode and equals methods.
+        assertNotEquals(customConfigItem, item.getCurrentValue());
+
+        assertEquals(customConfigItem.description, item.getCurrentValue().description);
+        assertEquals(customConfigItem.id, item.getCurrentValue().id);
+        assertEquals(customConfigItem.inceptionDate, item.getCurrentValue().inceptionDate);
+    }
+
     private <A> StorableConfigurationItem<String, String, A, A> createSameTypeItem(String key, Class<A> valueType, A defaultValue) {
-        StorableConfigurationItemBuilder<String, String, A, A> builder = builderFactory.<String, String, A, A>getInstance()
-                .setItemID(key)
-                .setApplicationDataType(valueType)
-                .setStorageType(valueType);
+        StorableConfigurationItemBuilder<String, String, A, A> builder = builderFactory.<String, String, A, A>getInstance().setItemID(key).setApplicationDataType(valueType).setStorageType(valueType);
 
         if (defaultValue != null) {
             builder.setDefaultValue(defaultValue);
@@ -344,6 +309,7 @@ class PreferencesStorageProviderTest {
 
         assertEquals(expected, actual);
     }
+
 
     private static final class UnsupportedValueConfigurationItem implements StorableConfigurationItem<String, String, Object, Object> {
 
@@ -413,5 +379,41 @@ class PreferencesStorageProviderTest {
         public Object getDefaultValue() {
             return null;
         }
+    }
+
+    private enum IdentityEnum {
+        CUSTOM_CONFIG_ITEM
+    }
+
+    @SuppressWarnings("ClassCanBeRecord") // We intentionally use a class here to test on non-equality
+    private static class CustomConfigItem {
+        private static final String FIELD_SEPARATOR = "\t";
+
+        private final UUID id;
+        private final LocalDate inceptionDate;
+        private final String description;
+
+        private CustomConfigItem(UUID id, LocalDate inceptionDate, String description) {
+            this.id = id;
+            this.inceptionDate = inceptionDate;
+            this.description = description;
+        }
+
+        private static final Function<CustomConfigItem, String> TO_STORAGE_TYPE = customConfigItem -> {
+            if (customConfigItem == null) {
+                return null;
+            }
+            return customConfigItem.id + FIELD_SEPARATOR + customConfigItem.inceptionDate + FIELD_SEPARATOR + customConfigItem.description;
+        };
+
+        private static final Function<String, CustomConfigItem> TO_DATA_TYPE = string -> {
+            if (string == null) {
+                return null;
+            }
+            String[] strings = string.split(FIELD_SEPARATOR);
+            UUID newId = UUID.fromString(strings[0]);
+            LocalDate newDate = LocalDate.parse(strings[1]);
+            return new CustomConfigItem(newId, newDate, strings[2]);
+        };
     }
 }
