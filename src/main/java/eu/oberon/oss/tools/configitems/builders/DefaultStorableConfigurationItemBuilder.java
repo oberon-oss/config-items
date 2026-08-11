@@ -1,11 +1,11 @@
 package eu.oberon.oss.tools.configitems.builders;
 
-import eu.oberon.oss.tools.configitems.converters.Converter;
-import eu.oberon.oss.tools.configitems.converters.ConvertersRegistry;
 import eu.oberon.oss.tools.configitems.items.*;
 import eu.oberon.oss.tools.configitems.storage.DefaultStorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.converters.ConvertersRegistry;
+import eu.oberon.oss.tools.converters.string.Converter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

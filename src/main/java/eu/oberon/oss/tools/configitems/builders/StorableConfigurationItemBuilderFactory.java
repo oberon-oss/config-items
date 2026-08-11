@@ -109,6 +109,7 @@ public final class StorableConfigurationItemBuilderFactory {
      * @since 1.0.0
      */
     public <I, K, A, P> StorableConfigurationItemBuilder<I, K, A, P> getInstance() {
+        //noinspection unchecked
         return new DefaultStorableConfigurationItemBuilder<I, K, A, P>()
                 .setStorageProvider(storageProvider)
                 .setExtKeyType((Class<K>) externalKeyType)
