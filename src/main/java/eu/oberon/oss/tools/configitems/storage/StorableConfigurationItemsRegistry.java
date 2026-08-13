@@ -25,6 +25,13 @@ public class StorableConfigurationItemsRegistry {
     private final Map<Object, RegisteredConfigurationItem> storableConfigurationItems = new ConcurrentHashMap<>();
 
     /**
+     * Default constructor.
+     */
+    public StorableConfigurationItemsRegistry() {
+        // Keep javadoc happy
+    }
+
+    /**
      * Registers a storable configuration item.
      * <p>
      * Duplicate keys are rejected. Use {@link #replace(StorableConfigurationItem)} when replacement is intended.
