@@ -70,6 +70,23 @@ class DefaultStorableConfigurationItemBuilderTest {
     }
 
     @Test
+    void setItemIDDoesNotReplaceAlreadyInferredInternalKeyType() {
+        StorableConfigurationItemBuilder<Object, String, Integer, Integer> testBuilder = builderFactory
+                .<Object, String, Integer, Integer>getInstance()
+                .setItemID("string-key")
+                .setItemID(123)
+                .setDefaultValue(1)
+                .setToExtKey(Object::toString);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, testBuilder::build);
+
+        assertEquals(
+                "Item ID 123 is not an instance of internal key type class java.lang.String",
+                exception.getMessage()
+        );
+    }
+
+    @Test
     void buildInfersApplicationAndStorageTypesFromDefaultValue() {
         StorableConfigurationItem<String, String, Integer, Integer> item = builderFactory
                 .<String, String, Integer, Integer>getInstance()
@@ -80,6 +97,39 @@ class DefaultStorableConfigurationItemBuilderTest {
         assertEquals("inferred-default-value-key", item.getKey());
         assertEquals(123, item.getDefaultValue());
         assertEquals(123, item.getCurrentValue());
+    }
+
+    @Test
+    void setDefaultValueWithNullDoesNotInferApplicationOrStorageTypes() {
+        StorableConfigurationItem<String, String, Integer, Integer> item = builderFactory
+                .<String, String, Integer, Integer>getInstance()
+                .setItemID("null-default-value-key")
+                .setDefaultValue(null)
+                .setApplicationDataType(Integer.class)
+                .setStorageType(Integer.class)
+                .build();
+
+        assertEquals("null-default-value-key", item.getKey());
+        assertNull(item.getDefaultValue());
+        assertNull(item.getCurrentValue());
+        assertEquals(Integer.class, item.configurationItemAccessor().applicationDataType());
+        assertEquals(Integer.class, item.configurationItemAccessor().storageType());
+    }
+
+    @Test
+    void setDefaultValueDoesNotReplaceAlreadyConfiguredStorageType() {
+        StorableConfigurationItem<String, String, Integer, String> item = builderFactory
+                .<String, String, Integer, String>getInstance()
+                .setItemID("preconfigured-storage-type-key")
+                .setStorageType(String.class)
+                .setDefaultValue(123)
+                .build();
+
+        assertEquals("preconfigured-storage-type-key", item.getKey());
+        assertEquals(123, item.getDefaultValue());
+        assertEquals(123, item.getCurrentValue());
+        assertEquals(Integer.class, item.configurationItemAccessor().applicationDataType());
+        assertEquals(String.class, item.configurationItemAccessor().storageType());
     }
 
     @Test

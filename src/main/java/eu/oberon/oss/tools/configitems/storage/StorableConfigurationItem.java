@@ -15,7 +15,7 @@ import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
  * @author TigerLilly64
  * @since 1.0.0
  */
-public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem<I, A> {
+public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem<I, A>, RegisteredConfigurationItem {
 
     /**
      * Provides access to the configuration item accessor.
@@ -34,6 +34,7 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
      *
      * @since 1.0.0
      */
+    @Override
     StorageProvider storageProvider();
 
     /**
@@ -41,6 +42,7 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
      *
      * @since 1.0.0
      */
+    @Override
     default void load() {
         storageProvider().loadConfigurationItem(this);
     }
@@ -50,6 +52,7 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
      *
      * @since 1.0.0
      */
+    @Override
     default void save() {
         storageProvider().storeConfigurationItem(this);
     }
