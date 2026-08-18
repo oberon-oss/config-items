@@ -19,7 +19,7 @@ jobs:
         with:
             java-version: '25'
             snapshot-branch: ${{ github.ref_name }}
-            sonar-enabled: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+            sonar-enabled: ${{ github.ref_name == 'main' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
             sonar-maven-profile: coverage
             sonar-quality-gate-blocking: false
             snapshot-maven-profiles: generate-javadoc-and-source
