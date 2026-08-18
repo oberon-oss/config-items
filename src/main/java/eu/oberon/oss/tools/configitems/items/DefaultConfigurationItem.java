@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+import static eu.oberon.oss.tools.configitems.ConfigItems.PARAMETER_MUST_NOT_BE_NULL;
+
 /**
  * A default implementation of {@link ConfigurationItem}.
  *
@@ -29,7 +31,7 @@ public final class DefaultConfigurationItem<I, A> implements ConfigurationItem<I
      * @since 1.0.0
      */
     public DefaultConfigurationItem(I itemID, @Nullable A defaultValue) {
-        this.itemID = Objects.requireNonNull(itemID, "Parameter: itemID");
+        this.itemID = Objects.requireNonNull(itemID,PARAMETER_MUST_NOT_BE_NULL.getMessage("itemID"));
         this.defaultValue = defaultValue;
         this.currentValue = defaultValue;
     }

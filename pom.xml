@@ -37,8 +37,28 @@
             <artifactId>converters</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>eu.oberon-oss.tools</groupId>
+            <artifactId>resource-bundle-helper</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <sourceFileExcludes>
+                        <sourceFileExclude>**/ConfigItems.java</sourceFileExclude>
+                    </sourceFileExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <repositories>
         <repository>
             <snapshots>

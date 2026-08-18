@@ -2,8 +2,8 @@ package eu.oberon.oss.tools.configitems;
 
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilderFactory;
-import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.PreferencesStorageProvider;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -217,7 +217,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
         NullPointerException exception = assertThrows(NullPointerException.class, testBuilder::build);
 
-        assertEquals("ItemID type must not be null", exception.getMessage());
+        assertEquals("Parameter: 'itemID'", exception.getMessage());
     }
 
     @Test
@@ -244,7 +244,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
         NullPointerException exception = assertThrows(NullPointerException.class, testBuilder::build);
 
-        assertEquals("Application data type must not be null", exception.getMessage());
+        assertEquals("Parameter: 'applicationDataType'", exception.getMessage());
     }
 
     @Test
@@ -256,7 +256,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
         NullPointerException exception = assertThrows(NullPointerException.class, testBuilder::build);
 
-        assertEquals("Storage data type must not be null", exception.getMessage());
+        assertEquals("Parameter: 'storageType'", exception.getMessage());
     }
 
     @Test

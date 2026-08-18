@@ -1,8 +1,8 @@
 package eu.oberon.oss.tools.configitems.storage;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
+
+import static eu.oberon.oss.tools.configitems.ConfigItems.PARAMETER_MUST_NOT_BE_NULL;
 
 /**
  * Typed key used to identify a configuration item and the type of value it stores.
@@ -17,7 +17,7 @@ import java.util.Objects;
  * @author TigerLilly64
  * @since 1.0.0
  */
-public record ConfigurationItemKey<A>(@NotNull Object id, @NotNull Class<A> valueType) {
+public record ConfigurationItemKey<A>(Object id, Class<A> valueType) {
 
     /**
      * Creates a typed configuration item key.
@@ -31,7 +31,7 @@ public record ConfigurationItemKey<A>(@NotNull Object id, @NotNull Class<A> valu
      * @throws NullPointerException if {@code id} or {@code valueType} is {@code null}.
      * @since 1.0.0
      */
-    public static <A> @NotNull ConfigurationItemKey<A> of(@NotNull Object id, @NotNull Class<A> valueType) {
+    public static <A> ConfigurationItemKey<A> of(Object id, Class<A> valueType) {
         return new ConfigurationItemKey<>(id, valueType);
     }
 
@@ -48,8 +48,8 @@ public record ConfigurationItemKey<A>(@NotNull Object id, @NotNull Class<A> valu
      * @since 1.0.0
      */
     @SuppressWarnings("unchecked")
-    public static <A> @NotNull ConfigurationItemKey<A> ofDefaultValue(@NotNull Object id, @NotNull A defaultValue) {
-        Objects.requireNonNull(defaultValue, "Parameter: defaultValue");
+    public static <A> ConfigurationItemKey<A> ofDefaultValue(Object id, A defaultValue) {
+        Objects.requireNonNull(defaultValue, PARAMETER_MUST_NOT_BE_NULL.getMessage("defaultValue"));
         return new ConfigurationItemKey<>(id, (Class<A>) defaultValue.getClass());
     }
 
@@ -60,7 +60,7 @@ public record ConfigurationItemKey<A>(@NotNull Object id, @NotNull Class<A> valu
      * @since 1.0.0
      */
     public ConfigurationItemKey {
-        Objects.requireNonNull(id, "Parameter: id");
-        Objects.requireNonNull(valueType, "Parameter: valueType");
+        Objects.requireNonNull(id, PARAMETER_MUST_NOT_BE_NULL.getMessage("id"));
+        Objects.requireNonNull(valueType, PARAMETER_MUST_NOT_BE_NULL.getMessage("valueType"));
     }
 }

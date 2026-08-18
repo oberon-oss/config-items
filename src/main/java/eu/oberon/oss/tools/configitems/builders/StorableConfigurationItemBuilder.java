@@ -3,7 +3,6 @@ package eu.oberon.oss.tools.configitems.builders;
 import eu.oberon.oss.tools.configitems.storage.DefaultStorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -38,7 +37,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setExtKeyType(@NotNull Class<K> extKeyType);
+    StorableConfigurationItemBuilder<I, K, A, P> setExtKeyType(Class<K> extKeyType);
 
     /**
      * Sets the application data type for the configuration item.
@@ -49,7 +48,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setApplicationDataType(@NotNull Class<A> applicationDataType);
+    StorableConfigurationItemBuilder<I, K, A, P> setApplicationDataType(Class<A> applicationDataType);
 
     /**
      * Sets the default value for the configuration item. This value will be used when no stored value is available or when the configuration is reset.
@@ -60,7 +59,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setDefaultValue(@NotNull A defaultValue);
+    StorableConfigurationItemBuilder<I, K, A, P> setDefaultValue(A defaultValue);
 
     /**
      * Sets the storage type for the configuration item.
@@ -71,7 +70,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setStorageType(@NotNull Class<P> storageType);
+    StorableConfigurationItemBuilder<I, K, A, P> setStorageType(Class<P> storageType);
 
     /**
      * Sets the conversion function from an internal key to an external key. This function is used to transform the internal key representation to the external
@@ -83,7 +82,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setToExtKey(@NotNull Function<I, K> toExtKey);
+    StorableConfigurationItemBuilder<I, K, A, P> setToExtKey(Function<I, K> toExtKey);
 
     /**
      * Sets the unique identifier for this configuration item. The item ID is used to uniquely identify this configuration item within the system.
@@ -94,7 +93,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setItemID(@NotNull I itemID);
+    StorableConfigurationItemBuilder<I, K, A, P> setItemID(I itemID);
 
     /**
      * Sets the conversion function from storage type to application data type. This function is used when loading stored values to convert them into the
@@ -106,7 +105,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setToDataType(@NotNull Function<P, A> toDataType);
+    StorableConfigurationItemBuilder<I, K, A, P> setToDataType(Function<P, A> toDataType);
 
     /**
      * Sets the conversion function from an application data type to a storage type. This function is used when persisting values to convert them from the
@@ -118,7 +117,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setToStorageType(@NotNull Function<A, P> toStorageType);
+    StorableConfigurationItemBuilder<I, K, A, P> setToStorageType(Function<A, P> toStorageType);
 
     /**
      * Specifies if default converters for data and keys are to be generated in certain conditions.
@@ -140,7 +139,7 @@ public interface StorableConfigurationItemBuilder<I, K, A, P> {
      *
      * @since 1.0.0
      */
-    StorableConfigurationItemBuilder<I, K, A, P> setStorageProvider(@NotNull StorageProvider storageProvider);
+    StorableConfigurationItemBuilder<I, K, A, P> setStorageProvider(StorageProvider storageProvider);
 
     /**
      * Builds and returns a new instance of {@link DefaultStorableConfigurationItem} with all configured properties. This method performs validation to ensure

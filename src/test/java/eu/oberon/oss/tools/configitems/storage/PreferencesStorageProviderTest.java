@@ -256,7 +256,7 @@ class PreferencesStorageProviderTest {
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> provider.storeConfigurationItem(item));
 
-        assertEquals("Unsupported type: java.lang.Object", exception.getMessage());
+        assertEquals("Unsupported type: 'java.lang.Object'", exception.getMessage());
     }
 
     @Test

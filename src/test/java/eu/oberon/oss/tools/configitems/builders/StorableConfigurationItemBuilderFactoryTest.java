@@ -20,7 +20,7 @@ class StorableConfigurationItemBuilderFactoryTest {
 
         NullPointerException exception = assertThrows(NullPointerException.class, builder::build);
 
-        assertEquals("External Key data type must not be null", exception.getMessage());
+        assertEquals("Parameter: 'extKeyType'", exception.getMessage());
     }
 
     @Test
@@ -33,7 +33,7 @@ class StorableConfigurationItemBuilderFactoryTest {
 
         NullPointerException exception = assertThrows(NullPointerException.class, builder::build);
 
-        assertEquals("Storage provider must not be null", exception.getMessage());
+        assertEquals("Parameter: 'storageProvider'", exception.getMessage());
     }
 
     @Test
@@ -94,7 +94,7 @@ class StorableConfigurationItemBuilderFactoryTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
 
         assertEquals(
-                "Default value 123 is not an instance of storage data type class java.lang.String",
+                "Default value '123' is not an instance of storage data type 'class java.lang.String'",
                 exception.getMessage()
         );
     }

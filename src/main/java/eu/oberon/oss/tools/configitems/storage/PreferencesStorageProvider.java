@@ -1,10 +1,12 @@
 package eu.oberon.oss.tools.configitems.storage;
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.Set;
 import java.util.prefs.Preferences;
+
+import static eu.oberon.oss.tools.configitems.ConfigItems.TYPE_NOT_SUPPORTED;
 
 /**
  * Implementation of the {@link StorageProvider} interface that uses the preferences API to manage the storage and retrieval of configuration items. This
@@ -28,7 +30,7 @@ public class PreferencesStorageProvider implements StorageProvider {
      *
      * @since 1.0.0
      */
-    public PreferencesStorageProvider(@NotNull Preferences preferences) {
+    public PreferencesStorageProvider(Preferences preferences) {
         this.preferences = preferences;
     }
 
@@ -90,7 +92,7 @@ public class PreferencesStorageProvider implements StorageProvider {
             case "java.lang.Float" -> (P) Float.valueOf(preferences.getFloat(key, defaultValue == null ? 0.0F : (Float) defaultValue));
             case "java.lang.Double" -> (P) Double.valueOf(preferences.getDouble(key, defaultValue == null ? 0.0D : (Double) defaultValue));
             case "[B" -> (P) preferences.getByteArray(key, (byte[]) defaultValue);
-            default -> throw new IllegalArgumentException("Unsupported type: " + storageType.getName());
+            default -> throw TYPE_NOT_SUPPORTED.getException(IllegalArgumentException.class, storageType.getName());
         };
     }
 
@@ -107,7 +109,7 @@ public class PreferencesStorageProvider implements StorageProvider {
             case Float floatValue -> preferences.putFloat(key, floatValue);
             case Double doubleValue -> preferences.putDouble(key, doubleValue);
             case byte[] bytes -> preferences.putByteArray(key, bytes);
-            default -> throw new IllegalArgumentException("Unsupported type: " + value.getClass().getName());
+            default -> throw TYPE_NOT_SUPPORTED.getException(IllegalArgumentException.class, value.getClass().getName());
         }
     }
 }

@@ -3,32 +3,33 @@ package eu.oberon.oss.tools.configitems.storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static eu.oberon.oss.tools.configitems.ConfigItems.*;
 
 /**
  * Registry for {@link StorableConfigurationItem} instances.
  * <p>
- * The registry is thread-safe for registration, lookup and removal operations. The contained configuration items themselves are not synchronized by this class.
- * If the same item is mutated, loaded or saved concurrently, thread-safety depends on the item and its {@link StorageProvider}.
- * </p>
+ * The registry is thread-safe for registration, lookup, and removal operations.
+ * <p>
+ * This class does not synchronize the contained configuration items themselves. If the same item is mutated, loaded, or saved concurrently, thread-safety
+ * depends on the item and its {@link StorageProvider}.
  *
  * @author TigerLilly64
  * @since 1.0.0
  */
 public class StorableConfigurationItemsRegistry {
+    private static final String PARAMETER_ITEM_ID = "itemId";
+    private static final String PARAMETER_KEY = "key";
 
-    private final Map<Object, RegisteredConfigurationItem> storableConfigurationItems = new ConcurrentHashMap<>();
+    private final Map<Object, RegisteredConfigurationItem> storableConfigurationItems;
 
     /**
      * Default constructor.
      */
     public StorableConfigurationItemsRegistry() {
-        // Keep javadoc happy
+        storableConfigurationItems = new ConcurrentHashMap<>();
     }
 
     /**
@@ -44,14 +45,14 @@ public class StorableConfigurationItemsRegistry {
      * @throws IllegalArgumentException if an item with the same key is already registered.
      * @since 1.0.0
      */
-    public <I> void register(@NotNull StorableConfigurationItem<I, ?, ?, ?> storableConfigurationItem) {
-        Objects.requireNonNull(storableConfigurationItem, "Parameter: storableConfigurationItem");
+    public <I> void register(StorableConfigurationItem<I, ?, ?, ?> storableConfigurationItem) {
+        Objects.requireNonNull(storableConfigurationItem, PARAMETER_MUST_NOT_BE_NULL.getMessage("storableConfigurationItem"));
 
-        I key = Objects.requireNonNull(storableConfigurationItem.getKey(), "Configuration item key must not be null");
+        I key = Objects.requireNonNull(storableConfigurationItem.getKey(), CONFIGURATION_ITEM_KEY_MUST_NOT_BE_NULL.getMessage());
         RegisteredConfigurationItem previousItem = storableConfigurationItems.putIfAbsent(key, storableConfigurationItem);
 
         if (previousItem != null) {
-            throw new IllegalArgumentException("A configuration item with key '" + key + "' is already registered");
+            throw CONFIGURATION_ALREADY_DEFINED.getException(IllegalArgumentException.class, key);
         }
     }
 
@@ -66,10 +67,11 @@ public class StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code storableConfigurationItem} or its key is {@code null}.
      * @since 1.0.0
      */
-    public <I> @Nullable RegisteredConfigurationItem replace(@NotNull StorableConfigurationItem<I, ?, ?, ?> storableConfigurationItem) {
-        Objects.requireNonNull(storableConfigurationItem, "Parameter: storableConfigurationItem");
+    public <I> @Nullable RegisteredConfigurationItem replace(StorableConfigurationItem<I, ?, ?, ?> storableConfigurationItem) {
 
-        I key = Objects.requireNonNull(storableConfigurationItem.getKey(), "Configuration item key must not be null");
+        Objects.requireNonNull(storableConfigurationItem, PARAMETER_MUST_NOT_BE_NULL.getMessage("storableConfigurationItem"));
+
+        I key = Objects.requireNonNull(storableConfigurationItem.getKey(), CONFIGURATION_ITEM_KEY_MUST_NOT_BE_NULL.getMessage());
         return storableConfigurationItems.put(key, storableConfigurationItem);
     }
 
@@ -87,8 +89,8 @@ public class StorableConfigurationItemsRegistry {
      * @since 1.0.0
      */
     @SuppressWarnings("unchecked")
-    public <K, A, P> @Nullable StorableConfigurationItem<Object, K, A, P> getItem(@NotNull ConfigurationItemKey<A> key) {
-        Objects.requireNonNull(key, "Parameter: key");
+    public <K, A, P> @Nullable StorableConfigurationItem<Object, K, A, P> getItem( ConfigurationItemKey<A> key) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
         return (StorableConfigurationItem<Object, K, A, P>) storableConfigurationItems.get(key.id());
     }
 
@@ -105,8 +107,8 @@ public class StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code itemId} is {@code null}.
      * @since 1.0.0
      */
-    public @Nullable RegisteredConfigurationItem getItem(@NotNull Object itemId) {
-        Objects.requireNonNull(itemId, "Parameter: itemId");
+    public @Nullable RegisteredConfigurationItem getItem( Object itemId) {
+        Objects.requireNonNull(itemId, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_ITEM_ID));
         return storableConfigurationItems.get(itemId);
     }
 
@@ -123,7 +125,7 @@ public class StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code key} is {@code null}.
      * @since 1.0.0
      */
-    public <K, A, P> @NotNull Optional<StorableConfigurationItem<Object, K, A, P>> findItem(@NotNull ConfigurationItemKey<A> key) {
+    public <K, A, P> @NotNull Optional<StorableConfigurationItem<Object, K, A, P>> findItem( ConfigurationItemKey<A> key) {
         return Optional.ofNullable(getItem(key));
     }
 
@@ -141,11 +143,11 @@ public class StorableConfigurationItemsRegistry {
      * @throws NoSuchElementException if no item exists for the key.
      * @since 1.0.0
      */
-    public <K, A, P> @NotNull StorableConfigurationItem<Object, K, A, P> getRequiredItem(@NotNull ConfigurationItemKey<A> key) {
+    public <K, A, P> @NotNull StorableConfigurationItem<Object, K, A, P> getRequiredItem( ConfigurationItemKey<A> key) {
         StorableConfigurationItem<Object, K, A, P> item = getItem(key);
 
         if (item == null) {
-            throw new NoSuchElementException("No configuration item registered for key '" + key.id() + "'");
+            throw NO_CONFIGURATION_ITEM_REGISTERED.getException(NoSuchElementException.class, key.id());
         }
 
         return item;
@@ -163,8 +165,8 @@ public class StorableConfigurationItemsRegistry {
      * @throws ClassCastException   if the current value is not assignable to the key's value type.
      * @since 1.0.0
      */
-    public <A> @Nullable A getCurrentValue(@NotNull ConfigurationItemKey<A> key) {
-        Objects.requireNonNull(key, "Parameter: key");
+    public <A> @Nullable A getCurrentValue( ConfigurationItemKey<A> key) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
 
         StorableConfigurationItem<Object, Object, A, Object> item = getItem(key);
 
@@ -182,13 +184,14 @@ public class StorableConfigurationItemsRegistry {
      * @param key The typed key of the item.
      * @param <A> The application-level value type.
      *
-     * @return An {@link Optional} containing the current value, or an empty {@link Optional} if no item exists for the key or the current value is {@code null}.
+     * @return An {@link Optional} containing the current value, or an empty {@link Optional} if no item exists for the key or the current value is
+     *         {@code null}.
      *
      * @throws NullPointerException if {@code key} is {@code null}.
      * @throws ClassCastException   if the current value is not assignable to the key's value type.
      * @since 1.0.0
      */
-    public <A> @NotNull Optional<A> findCurrentValue(@NotNull ConfigurationItemKey<A> key) {
+    public <A> @NotNull Optional<A> findCurrentValue( ConfigurationItemKey<A> key) {
         return Optional.ofNullable(getCurrentValue(key));
     }
 
@@ -205,7 +208,7 @@ public class StorableConfigurationItemsRegistry {
      * @throws ClassCastException     if the current value is not assignable to the key's value type.
      * @since 1.0.0
      */
-    public <A> @Nullable A getRequiredCurrentValue(@NotNull ConfigurationItemKey<A> key) {
+    public <A> @Nullable A getRequiredCurrentValue( ConfigurationItemKey<A> key) {
         StorableConfigurationItem<Object, Object, A, Object> item = getRequiredItem(key);
 
         Object currentValue = item.getCurrentValue();
@@ -228,8 +231,8 @@ public class StorableConfigurationItemsRegistry {
      * @throws ClassCastException   if {@code currentValue} is not assignable to the key's value type.
      * @since 1.0.0
      */
-    public <A> boolean setCurrentValue(@NotNull ConfigurationItemKey<A> key, @Nullable A currentValue) {
-        Objects.requireNonNull(key, "Parameter: key");
+    public <A> boolean setCurrentValue( ConfigurationItemKey<A> key, @Nullable A currentValue) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
 
         if (currentValue != null) {
             key.valueType().cast(currentValue);
@@ -257,8 +260,8 @@ public class StorableConfigurationItemsRegistry {
      * @throws ClassCastException     if {@code currentValue} is not assignable to the key's value type.
      * @since 1.0.0
      */
-    public <A> void setRequiredCurrentValue(@NotNull ConfigurationItemKey<A> key, @Nullable A currentValue) {
-        Objects.requireNonNull(key, "Parameter: key");
+    public <A> void setRequiredCurrentValue( ConfigurationItemKey<A> key, @Nullable A currentValue) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
 
         if (currentValue != null) {
             key.valueType().cast(currentValue);
@@ -278,8 +281,8 @@ public class StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code key} is {@code null}.
      * @since 1.0.0
      */
-    public boolean containsItem(@NotNull ConfigurationItemKey<?> key) {
-        Objects.requireNonNull(key, "Parameter: key");
+    public boolean containsItem( ConfigurationItemKey<?> key) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
         return storableConfigurationItems.containsKey(key.id());
     }
 
@@ -293,8 +296,9 @@ public class StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code itemId} is {@code null}.
      * @since 1.0.0
      */
-    public boolean containsItemId(@NotNull Object itemId) {
-        Objects.requireNonNull(itemId, "Parameter: itemId");
+    public boolean containsItemId( Object itemId) {
+
+        Objects.requireNonNull(itemId, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_ITEM_ID));
         return storableConfigurationItems.containsKey(itemId);
     }
 
@@ -308,8 +312,8 @@ public class StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code key} is {@code null}.
      * @since 1.0.0
      */
-    public @Nullable RegisteredConfigurationItem unregister(@NotNull ConfigurationItemKey<?> key) {
-        Objects.requireNonNull(key, "Parameter: key");
+    public @Nullable RegisteredConfigurationItem unregister( ConfigurationItemKey<?> key) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
         return storableConfigurationItems.remove(key.id());
     }
 
@@ -323,8 +327,8 @@ public class StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code itemId} is {@code null}.
      * @since 1.0.0
      */
-    public @Nullable RegisteredConfigurationItem unregisterById(@NotNull Object itemId) {
-        Objects.requireNonNull(itemId, "Parameter: itemId");
+    public @Nullable RegisteredConfigurationItem unregisterById( Object itemId) {
+        Objects.requireNonNull(itemId, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_ITEM_ID));
         return storableConfigurationItems.remove(itemId);
     }
 
@@ -351,7 +355,8 @@ public class StorableConfigurationItemsRegistry {
     /**
      * Loads all currently registered items.
      * <p>
-     * This method operates on a stable snapshot of the registry. Items registered while this method is running are not guaranteed to be loaded by this invocation.
+     * This method operates on a stable snapshot of the registry. Items registered while this method is running are not guaranteed to be loaded by this
+     * invocation.
      * </p>
      *
      * @since 1.0.0
@@ -365,7 +370,8 @@ public class StorableConfigurationItemsRegistry {
     /**
      * Saves all currently registered items.
      * <p>
-     * This method operates on a stable snapshot of the registry. Items registered while this method is running are not guaranteed to be saved by this invocation.
+     * This method operates on a stable snapshot of the registry. Items registered while this method is running are not guaranteed to be saved by this
+     * invocation.
      * </p>
      *
      * @since 1.0.0

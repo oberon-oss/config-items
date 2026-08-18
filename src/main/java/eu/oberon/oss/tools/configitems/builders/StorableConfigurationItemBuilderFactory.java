@@ -2,9 +2,11 @@ package eu.oberon.oss.tools.configitems.builders;
 
 import eu.oberon.oss.tools.configitems.storage.PreferencesStorageProvider;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.prefs.Preferences;
+
+import static eu.oberon.oss.tools.configitems.ConfigItems.PARAMETER_MUST_NOT_BE_NULL;
 
 /**
  * A factory class for creating instances of {@link StorableConfigurationItemBuilder} with support for persisting preferences using the {@link Preferences}
@@ -24,16 +26,13 @@ import java.util.prefs.Preferences;
  * @since 1.0.0
  */
 public final class StorableConfigurationItemBuilderFactory {
-
-    @NotNull
     private final StorageProvider storageProvider;
-    @NotNull
     private final Object externalKeyType;
     private final boolean autoGenerate;
 
-    private <K> StorableConfigurationItemBuilderFactory(@NotNull StorageProvider storageProvider, K externalKeyType, boolean autoGenerate) {
-        this.storageProvider = storageProvider;
-        this.externalKeyType = externalKeyType;
+    private <K> StorableConfigurationItemBuilderFactory(StorageProvider storageProvider, K externalKeyType, boolean autoGenerate) {
+        this.storageProvider = Objects.requireNonNull(storageProvider, PARAMETER_MUST_NOT_BE_NULL.getMessage("storageProvider"));
+        this.externalKeyType = Objects.requireNonNull(externalKeyType, PARAMETER_MUST_NOT_BE_NULL.getMessage("externalKeyType"));
         this.autoGenerate = autoGenerate;
     }
 
@@ -49,7 +48,7 @@ public final class StorableConfigurationItemBuilderFactory {
      *
      * @since 1.0.0
      */
-    public static <K> StorableConfigurationItemBuilderFactory create(@NotNull StorageProvider storageProvider, Class<K> externalKeyType, boolean autoGenerate) {
+    public static <K> StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, Class<K> externalKeyType, boolean autoGenerate) {
         return new StorableConfigurationItemBuilderFactory(storageProvider, externalKeyType, autoGenerate);
     }
 
@@ -64,7 +63,7 @@ public final class StorableConfigurationItemBuilderFactory {
      *
      * @since 1.0.0
      */
-    public static <K> StorableConfigurationItemBuilderFactory create(@NotNull StorageProvider storageProvider, Class<K> externalKeyType) {
+    public static <K> StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, Class<K> externalKeyType) {
         return new StorableConfigurationItemBuilderFactory(storageProvider, externalKeyType, true);
     }
 
@@ -78,7 +77,7 @@ public final class StorableConfigurationItemBuilderFactory {
      *
      * @since 1.0.0
      */
-    public static StorableConfigurationItemBuilderFactory create(@NotNull StorageProvider storageProvider, boolean autoGenerate) {
+    public static StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, boolean autoGenerate) {
         return new StorableConfigurationItemBuilderFactory(storageProvider, String.class, autoGenerate);
     }
 
@@ -91,7 +90,7 @@ public final class StorableConfigurationItemBuilderFactory {
      *
      * @since 1.0.0
      */
-    public static StorableConfigurationItemBuilderFactory create(@NotNull StorageProvider storageProvider) {
+    public static StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider) {
         return new StorableConfigurationItemBuilderFactory(storageProvider, String.class, true);
     }
 

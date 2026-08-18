@@ -1,18 +1,22 @@
 package eu.oberon.oss.tools.configitems.builders;
 
-import eu.oberon.oss.tools.configitems.items.*;
+
+import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
+import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
+import eu.oberon.oss.tools.configitems.items.DefaultConfigurationItem;
+import eu.oberon.oss.tools.configitems.items.DefaultConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.DefaultStorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
 import eu.oberon.oss.tools.converters.ConvertersRegistry;
 import eu.oberon.oss.tools.converters.string.Converter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import java.util.Objects;
 import java.util.function.Function;
+
+import static eu.oberon.oss.tools.configitems.ConfigItems.*;
 
 /**
  * A builder class for constructing immutable instances of {@link StorableConfigurationItem} instances with customizable types and conversion logic. This class
@@ -27,9 +31,7 @@ import java.util.function.Function;
  * @since 1.0.0
  */
 class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableConfigurationItemBuilder<I, K, A, P> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultStorableConfigurationItemBuilder.class);
     private static final ConvertersRegistry CONVERTERS_REGISTRY = new ConvertersRegistry();
-
 
     private Class<I> intKeyType;
     private Class<K> extKeyType;
@@ -53,7 +55,7 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
      * @since 1.0.0
      */
     DefaultStorableConfigurationItemBuilder() {
-        // keep Javadoc happy
+        // Keep Javadoc happy
     }
 
     @Override
@@ -71,25 +73,24 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
      * ID.
      */
     @Override
-    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setItemID(@NotNull I itemID) {
+    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setItemID(I itemID) {
         this.itemID = itemID;
         if (intKeyType == null) {
             //noinspection unchecked
             intKeyType = (Class<I>) itemID.getClass();
-            LOGGER.debug("Internal key type set to class of item ID: {}", intKeyType);
+            INTERNAL_KEY_TYPE_SET.logMessage(Level.DEBUG, (Object[]) new Class[]{intKeyType});
         }
         return this;
     }
 
-
     @Override
-    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setExtKeyType(@NotNull Class<K> extKeyType) {
+    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setExtKeyType(Class<K> extKeyType) {
         this.extKeyType = extKeyType;
         return this;
     }
 
     @Override
-    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setApplicationDataType(@NotNull Class<A> applicationDataType) {
+    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setApplicationDataType(Class<A> applicationDataType) {
         this.applicationDataType = applicationDataType;
         return this;
     }
@@ -102,15 +103,15 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
      * if the value specified for the 'defaultValue' is not {@code null}, the 'applicationDataType' (if {@code null}) will be set to the class of the
      * 'defaultValue'.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "java:S3878"})
     @Override
     public DefaultStorableConfigurationItemBuilder<I, K, A, P> setDefaultValue(@Nullable A defaultValue) {
         this.defaultValue = defaultValue;
         if (this.defaultValue != null && applicationDataType == null) {
             applicationDataType = (Class<A>) defaultValue.getClass();
-            LOGGER.debug("Application data type set to class of defaultValue: {}", applicationDataType);
+            APPLICATION_DATA_TYPE_SET.logMessage(Level.DEBUG, new Object[]{applicationDataType});
             if (storageType == null) {
-                LOGGER.debug("Storage type set to class of item defaultValue: {}", applicationDataType);
+                STORAGE_TYPE_SET_TO.logMessage(Level.DEBUG, new Object[]{applicationDataType});
                 storageType = (Class<P>) defaultValue.getClass();
             }
         }
@@ -118,31 +119,31 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
     }
 
     @Override
-    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setStorageType(@NotNull Class<P> storageType) {
+    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setStorageType(Class<P> storageType) {
         this.storageType = storageType;
         return this;
     }
 
     @Override
-    public StorableConfigurationItemBuilder<I, K, A, P> setStorageProvider(@NotNull StorageProvider storageProvider) {
+    public StorableConfigurationItemBuilder<I, K, A, P> setStorageProvider(StorageProvider storageProvider) {
         this.storageProvider = storageProvider;
         return this;
     }
 
     @Override
-    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setToExtKey(@NotNull Function<I, K> toExtKey) {
+    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setToExtKey(Function<I, K> toExtKey) {
         this.toExtKey = toExtKey;
         return this;
     }
 
     @Override
-    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setToDataType(@NotNull Function<P, A> toDataType) {
+    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setToDataType(Function<P, A> toDataType) {
         this.toDataType = toDataType;
         return this;
     }
 
     @Override
-    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setToStorageType(@NotNull Function<A, P> toStorageType) {
+    public DefaultStorableConfigurationItemBuilder<I, K, A, P> setToStorageType(Function<A, P> toStorageType) {
         this.toStorageType = toStorageType;
         return this;
     }
@@ -150,27 +151,27 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
 
     @Override
     public StorableConfigurationItem<I, K, A, P> build() {
-        Objects.requireNonNull(itemID, "ItemID type must not be null");
-        Objects.requireNonNull(intKeyType, "Internal Key data type must not be null");
-        Objects.requireNonNull(extKeyType, "External Key data type must not be null");
-        Objects.requireNonNull(applicationDataType, "Application data type must not be null");
-        Objects.requireNonNull(storageType, "Storage data type must not be null");
-        Objects.requireNonNull(storageProvider, "Storage provider must not be null");
+        Objects.requireNonNull(itemID, PARAMETER_MUST_NOT_BE_NULL.getMessage("itemID"));
+        Objects.requireNonNull(intKeyType, PARAMETER_MUST_NOT_BE_NULL.getMessage("intKeyType"));
+        Objects.requireNonNull(extKeyType, PARAMETER_MUST_NOT_BE_NULL.getMessage("extKeyType"));
+        Objects.requireNonNull(applicationDataType, PARAMETER_MUST_NOT_BE_NULL.getMessage("applicationDataType"));
+        Objects.requireNonNull(storageType, PARAMETER_MUST_NOT_BE_NULL.getMessage("storageType"));
+        Objects.requireNonNull(storageProvider, PARAMETER_MUST_NOT_BE_NULL.getMessage("storageProvider"));
 
         if (!intKeyType.isInstance(itemID)) {
-            throw new IllegalArgumentException("Item ID " + itemID + " is not an instance of internal key type " + intKeyType);
+            throw TYPE_MUST_BE_INSTANCE_OF.getException(IllegalArgumentException.class, itemID, intKeyType);
         }
 
         if (defaultValue != null && !applicationDataType.isInstance(defaultValue)) {
-            throw new IllegalArgumentException("Default value " + defaultValue + " is not an instance of application data type " + applicationDataType);
+            throw DEFAULT_VALUE_MUST_BE_INSTANCE_OF.getException(IllegalArgumentException.class, defaultValue, applicationDataType);
         }
 
         if (!storageProvider.isStorageClassTypeAllowed(storageType)) {
-            throw new IllegalArgumentException("Storage type " + storageType + " is not supported");
+            throw STORAGE_TYPE_IS_NOT_SUPPORTED.getException(IllegalArgumentException.class, storageType);
         }
 
         if (!storageProvider.isKeyClassTypeAllowed(extKeyType)) {
-            throw new IllegalArgumentException("External key type " + extKeyType + " is not supported");
+            throw EXTERNAL_KEY_TYPE_NOT_SUPPORTED.getException(IllegalArgumentException.class, extKeyType);
         }
 
         setDataConverters();
@@ -179,7 +180,7 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
         if (defaultValue != null) {
             P convertedDefaultValue = toStorageType.apply(defaultValue);
             if (convertedDefaultValue != null && !storageType.isInstance(convertedDefaultValue)) {
-                throw new IllegalArgumentException("Default value " + defaultValue + " is not an instance of storage data type " + storageType);
+                throw DEFAULT_VALUE_TYPES_DO_NOT_MATCH.getException(IllegalArgumentException.class, defaultValue, storageType);
             }
         }
 
@@ -230,8 +231,7 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
         if (autoGeneration && toExtKey == null) {
             toExtKey = getAutoConverter(intKeyType, extKeyType);
         }
-
-        Objects.requireNonNull(toExtKey, "'toExtKey()' function must not be null");
+        Objects.requireNonNull(toExtKey, FUNCTION_MUST_NOT_BE_NULL.getMessage("toExtKey()"));
     }
 
     private void setDataConverters() {
@@ -244,7 +244,7 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
             }
         }
 
-        Objects.requireNonNull(toDataType, "'toDataType()' function must not be null");
-        Objects.requireNonNull(toStorageType, "'toStorageType()' function must not be null");
+        Objects.requireNonNull(toDataType, FUNCTION_MUST_NOT_BE_NULL.getMessage("toDataType()"));
+        Objects.requireNonNull(toStorageType, FUNCTION_MUST_NOT_BE_NULL.getMessage("toStorageType()"));
     }
 }
