@@ -3,6 +3,7 @@ package eu.oberon.oss.tools.configitems.storage;
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -549,7 +550,7 @@ class StorableConfigurationItemsRegistryTest {
         }
 
         @Override
-        public StorageProvider storageProvider() {
+        public @NonNull StorageProvider storageProvider() {
             return storageProvider;
         }
 

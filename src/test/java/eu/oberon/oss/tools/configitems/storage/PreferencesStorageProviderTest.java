@@ -5,6 +5,7 @@ import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.converters.ConvertersRegistry;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -358,7 +359,8 @@ class PreferencesStorageProviderTest {
         }
 
         @Override
-        public StorageProvider storageProvider() {
+        public @NonNull StorageProvider storageProvider() {
+            //noinspection DataFlowIssue - testing only
             return null;
         }
 
