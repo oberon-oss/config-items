@@ -31,7 +31,7 @@ import static eu.oberon.oss.tools.configitems.ConfigItems.*;
  * @since 1.0.0
  */
 class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableConfigurationItemBuilder<I, K, A, P> {
-    private static final ConvertersRegistry CONVERTERS_REGISTRY = new ConvertersRegistry();
+    private final ConvertersRegistry convertersRegistry;
 
     private Class<I> intKeyType;
     private Class<K> extKeyType;
@@ -55,7 +55,19 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
      * @since 1.0.0
      */
     DefaultStorableConfigurationItemBuilder() {
-        // Keep Javadoc happy
+        this(new ConvertersRegistry());
+    }
+
+    /**
+     * Constructs a new instance of {@code DefaultStorableConfigurationItemBuilder} with the specified {@code convertersRegistry}.
+     *
+     * @param convertersRegistry the registry containing converters for key, data, and storage type transformations; must not be null.
+     *
+     * @throws NullPointerException if {@code convertersRegistry} is null.
+     * @since 1.0.0
+     */
+    DefaultStorableConfigurationItemBuilder(ConvertersRegistry convertersRegistry) {
+        this.convertersRegistry = Objects.requireNonNull(convertersRegistry, "convertersRegistry");
     }
 
     @Override
@@ -211,14 +223,14 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
         }
 
         if (targetType.equals(String.class)) {
-            Converter<S> converter = CONVERTERS_REGISTRY.getConverterForClassType(sourceType);
+            Converter<S> converter = convertersRegistry.getConverterForClassType(sourceType);
             if (converter != null) {
                 return value -> (T) converter.convertToString().apply(value);
             }
         }
 
         if (sourceType.equals(String.class)) {
-            Converter<T> converter = CONVERTERS_REGISTRY.getConverterForClassType(targetType);
+            Converter<T> converter = convertersRegistry.getConverterForClassType(targetType);
             if (converter != null) {
                 return value -> converter.convertFromString().apply((String) value);
             }

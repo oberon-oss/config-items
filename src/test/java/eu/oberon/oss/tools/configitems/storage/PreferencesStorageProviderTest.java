@@ -3,6 +3,7 @@ package eu.oberon.oss.tools.configitems.storage;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilderFactory;
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
+import eu.oberon.oss.tools.converters.ConvertersRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ class PreferencesStorageProviderTest {
     private Preferences preferences;
     private PreferencesStorageProvider storageProvider;
     private StorableConfigurationItemBuilderFactory builderFactory;
+    private final ConvertersRegistry convertersRegistry = new ConvertersRegistry();
 
     static Stream<Arguments> supportedStorageTypes() {
         return Stream.of(Arguments.of(String.class), Arguments.of(Integer.class), Arguments.of(Long.class), Arguments.of(Float.class), Arguments.of(Double.class), Arguments.of(Boolean.class), Arguments.of(byte[].class));
@@ -49,7 +51,7 @@ class PreferencesStorageProviderTest {
         preferences.clear();
 
         storageProvider = new PreferencesStorageProvider(preferences);
-        builderFactory = StorableConfigurationItemBuilderFactory.create(storageProvider);
+        builderFactory = StorableConfigurationItemBuilderFactory.create(storageProvider, convertersRegistry);
     }
 
     @AfterEach

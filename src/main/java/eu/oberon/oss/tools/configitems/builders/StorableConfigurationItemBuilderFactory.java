@@ -2,6 +2,7 @@ package eu.oberon.oss.tools.configitems.builders;
 
 import eu.oberon.oss.tools.configitems.storage.PreferencesStorageProvider;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.converters.ConvertersRegistry;
 
 import java.util.Objects;
 import java.util.prefs.Preferences;
@@ -29,69 +30,75 @@ public final class StorableConfigurationItemBuilderFactory {
     private final StorageProvider storageProvider;
     private final Object externalKeyType;
     private final boolean autoGenerate;
+    private final ConvertersRegistry convertersRegistry;
 
-    private <K> StorableConfigurationItemBuilderFactory(StorageProvider storageProvider, K externalKeyType, boolean autoGenerate) {
+    private <K> StorableConfigurationItemBuilderFactory(StorageProvider storageProvider, K externalKeyType, boolean autoGenerate, ConvertersRegistry convertersRegistry) {
         this.storageProvider = Objects.requireNonNull(storageProvider, PARAMETER_MUST_NOT_BE_NULL.getMessage("storageProvider"));
         this.externalKeyType = Objects.requireNonNull(externalKeyType, PARAMETER_MUST_NOT_BE_NULL.getMessage("externalKeyType"));
         this.autoGenerate = autoGenerate;
+        this.convertersRegistry = Objects.requireNonNull(convertersRegistry, PARAMETER_MUST_NOT_BE_NULL.getMessage("convertersRegistry"));
     }
 
     /**
      * Creates a new instance of {@link StorableConfigurationItemBuilderFactory}.
      *
-     * @param storageProvider The storage provider for storing and retrieving configuration items.
-     * @param externalKeyType The external key type used for identifying configuration items.
-     * @param autoGenerate    A flag indicating whether to enable auto-generation of configuration items.
-     * @param <K>             The type of the external key.
+     * @param storageProvider    The storage provider for storing and retrieving configuration items.
+     * @param externalKeyType    The external key type used for identifying configuration items.
+     * @param autoGenerate       A flag indicating whether to enable auto-generation of configuration items. Must not be null.
+     * @param convertersRegistry The registry containing converters for key, data, and storage type transformations; must not be null.
+     * @param <K>                The type of the external key.
      *
      * @return A new instance of {@link StorableConfigurationItemBuilderFactory}.
      *
      * @since 1.0.0
      */
-    public static <K> StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, Class<K> externalKeyType, boolean autoGenerate) {
-        return new StorableConfigurationItemBuilderFactory(storageProvider, externalKeyType, autoGenerate);
+    public static <K> StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, Class<K> externalKeyType, boolean autoGenerate, ConvertersRegistry convertersRegistry) {
+        return new StorableConfigurationItemBuilderFactory(storageProvider, externalKeyType, autoGenerate, convertersRegistry);
     }
 
     /**
      * Creates a new instance of {@link StorableConfigurationItemBuilderFactory} with auto-generation enabled.
      *
-     * @param storageProvider The storage provider for storing and retrieving configuration items.
-     * @param externalKeyType The external key type used for identifying configuration items.
-     * @param <K>             The type of the external key.
+     * @param storageProvider    The storage provider for storing and retrieving configuration items.
+     * @param externalKeyType    The external key type used for identifying configuration items.
+     * @param convertersRegistry The registry containing converters for key, data, and storage type transformations; must not be null.
+     * @param <K>                The type of the external key.
      *
      * @return A new instance of {@link StorableConfigurationItemBuilderFactory}.
      *
      * @since 1.0.0
      */
-    public static <K> StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, Class<K> externalKeyType) {
-        return new StorableConfigurationItemBuilderFactory(storageProvider, externalKeyType, true);
+    public static <K> StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, Class<K> externalKeyType, ConvertersRegistry convertersRegistry) {
+        return new StorableConfigurationItemBuilderFactory(storageProvider, externalKeyType, true, convertersRegistry);
     }
 
     /**
      * Creates a new instance of {@link StorableConfigurationItemBuilderFactory} with auto-generation enabled.
      *
-     * @param storageProvider The storage provider for storing and retrieving configuration items.
-     * @param autoGenerate    Whether to enable auto-generation of configuration items.
+     * @param storageProvider    The storage provider for storing and retrieving configuration items.
+     * @param autoGenerate       Whether to enable auto-generation of configuration items.
+     * @param convertersRegistry The registry containing converters for key, data, and storage type transformations; must not be null.
      *
      * @return A new instance of {@link StorableConfigurationItemBuilderFactory}.
      *
      * @since 1.0.0
      */
-    public static StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, boolean autoGenerate) {
-        return new StorableConfigurationItemBuilderFactory(storageProvider, String.class, autoGenerate);
+    public static StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, boolean autoGenerate, ConvertersRegistry convertersRegistry) {
+        return new StorableConfigurationItemBuilderFactory(storageProvider, String.class, autoGenerate, convertersRegistry);
     }
 
     /**
      * Creates a new instance of {@link StorableConfigurationItemBuilderFactory} with the specified preferences class.
      *
-     * @param storageProvider The storage provider for storing and retrieving configuration items.
+     * @param storageProvider    The storage provider for storing and retrieving configuration items.
+     * @param convertersRegistry The registry containing converters for key, data, and storage type transformations; must not be null.
      *
      * @return A new instance of {@link StorableConfigurationItemBuilderFactory}.
      *
      * @since 1.0.0
      */
-    public static StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider) {
-        return new StorableConfigurationItemBuilderFactory(storageProvider, String.class, true);
+    public static StorableConfigurationItemBuilderFactory create(StorageProvider storageProvider, ConvertersRegistry convertersRegistry) {
+        return new StorableConfigurationItemBuilderFactory(storageProvider, String.class, true, convertersRegistry);
     }
 
     /**
@@ -109,7 +116,7 @@ public final class StorableConfigurationItemBuilderFactory {
      */
     public <I, K, A, P> StorableConfigurationItemBuilder<I, K, A, P> getInstance() {
         //noinspection unchecked
-        return new DefaultStorableConfigurationItemBuilder<I, K, A, P>()
+        return new DefaultStorableConfigurationItemBuilder<I, K, A, P>(convertersRegistry)
                 .setStorageProvider(storageProvider)
                 .setExtKeyType((Class<K>) externalKeyType)
                 .setAutoGeneration(autoGenerate);

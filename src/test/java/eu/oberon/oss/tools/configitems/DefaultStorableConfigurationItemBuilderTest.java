@@ -5,6 +5,7 @@ import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder
 import eu.oberon.oss.tools.configitems.storage.PreferencesStorageProvider;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.converters.ConvertersRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,14 +24,15 @@ class DefaultStorableConfigurationItemBuilderTest {
     private PreferencesStorageProvider storageProvider;
     private StorableConfigurationItemBuilderFactory builderFactory;
     private StorableConfigurationItemBuilder<ConfigTestEnum, String, Integer, String> builder;
+    private ConvertersRegistry convertersRegistry;
 
     @BeforeEach
     void setUp() throws BackingStoreException {
         preferences = Preferences.userRoot().node("/eu/oberon/oss/tools/configitems/builder-test/" + UUID.randomUUID());
         preferences.clear();
-
+        convertersRegistry = new ConvertersRegistry();
         storageProvider = new PreferencesStorageProvider(preferences);
-        builderFactory = StorableConfigurationItemBuilderFactory.create(storageProvider);
+        builderFactory = StorableConfigurationItemBuilderFactory.create(storageProvider, convertersRegistry);
         builder = builderFactory.getInstance();
     }
 
@@ -222,7 +224,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
     @Test
     void buildRejectsMissingExternalKeyType() {
-        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, false);
+        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, false, convertersRegistry);
 
         StorableConfigurationItemBuilder<String, String, Integer, Integer> testBuilder = factory
                 .<String, String, Integer, Integer>getInstance()
@@ -273,7 +275,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
     @Test
     void buildRejectsUnsupportedExternalKeyType() {
-        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, Integer.class);
+        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, Integer.class, convertersRegistry);
 
         StorableConfigurationItemBuilder<String, Integer, Integer, Integer> testBuilder = factory
                 .<String, Integer, Integer, Integer>getInstance()
@@ -288,7 +290,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
     @Test
     void buildRejectsMissingDataConvertersWhenAutoGenerationIsDisabled() {
-        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, false);
+        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, false, convertersRegistry);
 
         StorableConfigurationItemBuilder<String, String, Integer, String> testBuilder = factory
                 .<String, String, Integer, String>getInstance()
@@ -304,7 +306,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
     @Test
     void buildRejectsMissingKeyConverterWhenAutoGenerationCannotCreateOne() {
-        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, String.class, false);
+        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(storageProvider, String.class, false, convertersRegistry);
 
         StorableConfigurationItemBuilder<ConfigTestEnum, String, Integer, Integer> testBuilder = factory
                 .<ConfigTestEnum, String, Integer, Integer>getInstance()
@@ -334,7 +336,7 @@ class DefaultStorableConfigurationItemBuilderTest {
     @Test
     void buildRejectsUnsupportedStorageProviderDataType() {
         StorageProvider restrictiveStorageProvider = new RestrictiveStorageProvider(false, true);
-        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(restrictiveStorageProvider);
+        StorableConfigurationItemBuilderFactory factory = StorableConfigurationItemBuilderFactory.create(restrictiveStorageProvider, convertersRegistry);
 
         StorableConfigurationItemBuilder<String, String, Integer, Integer> testBuilder = factory
                 .<String, String, Integer, Integer>getInstance()
