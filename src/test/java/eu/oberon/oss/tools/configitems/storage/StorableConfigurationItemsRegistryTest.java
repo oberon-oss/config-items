@@ -90,6 +90,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
+        //noinspection AssertBetweenInconvertibleTypes - delibirate testing case
         assertSame(item, registry.getItem(key));
     }
 
@@ -125,6 +126,7 @@ class StorableConfigurationItemsRegistryTest {
         Optional<StorableConfigurationItem<Object, String, String, String>> foundItem = registry.findItem(key);
 
         assertTrue(foundItem.isPresent());
+        //noinspection AssertBetweenInconvertibleTypes - delibirate testing case
         assertSame(item, foundItem.get());
     }
 
@@ -142,6 +144,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
+        //noinspection AssertBetweenInconvertibleTypes - delibirate testing case
         assertSame(item, registry.getRequiredItem(key));
     }
 
@@ -456,6 +459,7 @@ class StorableConfigurationItemsRegistryTest {
         return new TestStorableConfigurationItem<>(key, String.class, currentValue, storageProvider);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private TestStorableConfigurationItem<Integer> createIntegerItem(String key, Integer currentValue) {
         return new TestStorableConfigurationItem<>(key, Integer.class, currentValue, storageProvider);
     }

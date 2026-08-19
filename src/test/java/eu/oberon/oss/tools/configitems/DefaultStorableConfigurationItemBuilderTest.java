@@ -322,6 +322,7 @@ class DefaultStorableConfigurationItemBuilderTest {
 
     @Test
     void buildRejectsConvertedDefaultValueWithWrongStorageType() {
+        //noinspection DataFlowIssue - testing only
         StorableConfigurationItemBuilder<String, String, Integer, String> testBuilder = builderFactory
                 .<String, String, Integer, String>getInstance()
                 .setItemID("wrong-converted-default-value-type-key")
