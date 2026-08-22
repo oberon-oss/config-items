@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StorableConfigurationItemsRegistryTest {
 
-    private StorableConfigurationItemsRegistry registry;
+    private DefaultStorableConfigurationItemsRegistry registry;
     private TestStorageProvider storageProvider;
 
     @BeforeEach
     void setUp() {
-        registry = new StorableConfigurationItemsRegistry();
+        registry = new DefaultStorableConfigurationItemsRegistry();
         storageProvider = new TestStorageProvider();
     }
 
@@ -176,7 +176,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        String value = registry.getCurrentValue(key);
+        String value = registry.getAccessor().getCurrentValue(key);
 
         assertEquals("value", value);
     }
@@ -185,7 +185,7 @@ class StorableConfigurationItemsRegistryTest {
     void getCurrentValueReturnsNullWhenItemDoesNotExist() {
         ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
 
-        assertNull(registry.getCurrentValue(key));
+        assertNull(registry.getAccessor().getCurrentValue(key));
     }
 
     @Test
@@ -195,7 +195,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        assertNull(registry.getCurrentValue(key));
+        assertNull(registry.getAccessor().getCurrentValue(key));
     }
 
     @Test
@@ -205,7 +205,8 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        assertThrows(ClassCastException.class, () -> registry.getCurrentValue(key));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(ClassCastException.class, () -> accessor.getCurrentValue(key));
     }
 
     @Test
@@ -215,7 +216,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        Optional<String> value = registry.findCurrentValue(key);
+        Optional<String> value = registry.getAccessor().findCurrentValue(key);
 
         assertTrue(value.isPresent());
         assertEquals("value", value.get());
@@ -225,7 +226,7 @@ class StorableConfigurationItemsRegistryTest {
     void findCurrentValueReturnsEmptyWhenItemIsMissing() {
         ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
 
-        assertTrue(registry.findCurrentValue(key).isEmpty());
+        assertTrue(registry.getAccessor().findCurrentValue(key).isEmpty());
     }
 
     @Test
@@ -235,7 +236,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        assertTrue(registry.findCurrentValue(key).isEmpty());
+        assertTrue(registry.getAccessor().findCurrentValue(key).isEmpty());
     }
 
     @Test
@@ -245,7 +246,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        Integer value = registry.getRequiredCurrentValue(key);
+        Integer value = registry.getAccessor().getRequiredCurrentValue(key);
 
         assertEquals(123, value);
     }
@@ -257,14 +258,15 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        assertNull(registry.getRequiredCurrentValue(key));
+        assertNull(registry.getAccessor().getRequiredCurrentValue(key));
     }
 
     @Test
     void getRequiredCurrentValueThrowsWhenItemIsMissing() {
         ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
 
-        assertThrows(NoSuchElementException.class, () -> registry.getRequiredCurrentValue(key));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NoSuchElementException.class, () -> accessor.getRequiredCurrentValue(key));
     }
 
     @Test
@@ -483,7 +485,7 @@ class StorableConfigurationItemsRegistryTest {
         registry.register(firstItem);
         registry.register(secondItem);
 
-        registry.loadItems();
+        registry.getAccessor().loadItems();
 
         assertEquals("loaded-first", firstItem.getCurrentValue());
         assertEquals(456, secondItem.getCurrentValue());
@@ -504,7 +506,8 @@ class StorableConfigurationItemsRegistryTest {
         registry.register(secondItem);
         registry.register(thirdItem);
 
-        registry.loadItems("first-key", "second-key");
+        //noinspection RedundantArrayCreation
+        registry.getAccessor().loadItems(new Object[]{"first-key", "second-key"});
 
         assertEquals("loaded-first", firstItem.getCurrentValue());
         assertEquals(456, secondItem.getCurrentValue());
@@ -516,19 +519,24 @@ class StorableConfigurationItemsRegistryTest {
     void loadItemsWithSpecificIdsThrowsWhenOneIdIsMissing() {
         registry.register(createStringItem("first-key", "value"));
 
-        assertThrows(NoSuchElementException.class, () -> registry.loadItems("first-key", "missing-key"));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        //noinspection RedundantArrayCreation
+        assertThrows(NoSuchElementException.class, () -> accessor.loadItems(new Object[]{"first-key", "missing-key"}));
     }
 
     @Test
     void loadItemsWithSpecificIdsThrowsWhenIdsArrayIsNull() {
-        assertThrows(NullPointerException.class, () -> registry.loadItems((Object[]) null));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NullPointerException.class, () -> accessor.loadItems((Object[]) null));
     }
 
     @Test
     void loadItemsWithSpecificIdsThrowsWhenOneIdIsNull() {
         registry.register(createStringItem("first-key", "value"));
 
-        assertThrows(NullPointerException.class, () -> registry.loadItems("first-key", null));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        //noinspection RedundantArrayCreation
+        assertThrows(NullPointerException.class, () -> accessor.loadItems(new Object[]{"first-key", null}));
     }
 
     @Test
@@ -539,7 +547,7 @@ class StorableConfigurationItemsRegistryTest {
         registry.register(firstItem);
         registry.register(secondItem);
 
-        registry.saveItems();
+        registry.getAccessor().saveItems();
 
         assertEquals("first", storageProvider.storedValues.get("first-key"));
         assertEquals(123, storageProvider.storedValues.get("second-key"));
@@ -556,7 +564,8 @@ class StorableConfigurationItemsRegistryTest {
         registry.register(secondItem);
         registry.register(thirdItem);
 
-        registry.saveItems("first-key", "third-key");
+        //noinspection RedundantArrayCreation
+        registry.getAccessor().saveItems(new Object[]{"first-key", "third-key"});
 
         assertEquals("first", storageProvider.storedValues.get("first-key"));
         assertNull(storageProvider.storedValues.get("second-key"));
@@ -568,19 +577,120 @@ class StorableConfigurationItemsRegistryTest {
     void saveItemsWithSpecificIdsThrowsWhenOneIdIsMissing() {
         registry.register(createStringItem("first-key", "value"));
 
-        assertThrows(NoSuchElementException.class, () -> registry.saveItems("first-key", "missing-key"));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        //noinspection RedundantArrayCreation
+        assertThrows(NoSuchElementException.class, () -> accessor.saveItems(new Object[]{"first-key", "missing-key"}));
     }
 
     @Test
     void saveItemsWithSpecificIdsThrowsWhenIdsArrayIsNull() {
-        assertThrows(NullPointerException.class, () -> registry.saveItems((Object[]) null));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NullPointerException.class, () -> accessor.saveItems((Object[]) null));
     }
 
     @Test
     void saveItemsWithSpecificIdsThrowsWhenOneIdIsNull() {
         registry.register(createStringItem("first-key", "value"));
 
-        assertThrows(NullPointerException.class, () -> registry.saveItems("first-key", null));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        //noinspection RedundantArrayCreation
+        assertThrows(NullPointerException.class, () -> accessor.saveItems(new Object[]{"first-key", null}));
+    }
+
+    @Test
+    void loadItemsByKeyLoadsSelectedItems() {
+        ConfigurationItemKey<String> firstKey = ConfigurationItemKey.of("first-key", String.class);
+        ConfigurationItemKey<Integer> secondKey = ConfigurationItemKey.of("second-key", Integer.class);
+
+        TestStorableConfigurationItem<String> firstItem = createStringItem("first-key", "initial-first");
+        TestStorableConfigurationItem<Integer> secondItem = createIntegerItem("second-key", 123);
+        TestStorableConfigurationItem<String> thirdItem = createStringItem("third-key", "initial-third");
+
+        storageProvider.storedValues.put("first-key", "loaded-first");
+        storageProvider.storedValues.put("second-key", 456);
+        storageProvider.storedValues.put("third-key", "loaded-third");
+
+        registry.register(firstItem);
+        registry.register(secondItem);
+        registry.register(thirdItem);
+
+        registry.getAccessor().loadItemsByKey(firstKey, secondKey);
+
+        assertEquals("loaded-first", firstItem.getCurrentValue());
+        assertEquals(456, secondItem.getCurrentValue());
+        assertEquals("initial-third", thirdItem.getCurrentValue());
+        assertEquals(2, storageProvider.loadCount);
+    }
+
+    @Test
+    void loadItemsByKeyThrowsWhenOneKeyIsMissing() {
+        ConfigurationItemKey<String> firstKey = ConfigurationItemKey.of("first-key", String.class);
+        ConfigurationItemKey<String> missingKey = ConfigurationItemKey.of("missing-key", String.class);
+        registry.register(createStringItem("first-key", "value"));
+
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NoSuchElementException.class, () -> accessor.loadItemsByKey(firstKey, missingKey));
+    }
+
+    @Test
+    void loadItemsByKeyThrowsWhenKeysArrayIsNull() {
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NullPointerException.class, () -> accessor.loadItemsByKey((ConfigurationItemKey<?>[]) null));
+    }
+
+    @Test
+    void loadItemsByKeyThrowsWhenOneKeyIsNull() {
+        ConfigurationItemKey<String> firstKey = ConfigurationItemKey.of("first-key", String.class);
+        registry.register(createStringItem("first-key", "value"));
+
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NullPointerException.class, () -> accessor.loadItemsByKey(firstKey, null));
+    }
+
+    @Test
+    void saveItemsByKeySavesSelectedItems() {
+        ConfigurationItemKey<String> firstKey = ConfigurationItemKey.of("first-key", String.class);
+        ConfigurationItemKey<String> thirdKey = ConfigurationItemKey.of("third-key", String.class);
+
+        TestStorableConfigurationItem<String> firstItem = createStringItem("first-key", "first");
+        TestStorableConfigurationItem<Integer> secondItem = createIntegerItem("second-key", 123);
+        TestStorableConfigurationItem<String> thirdItem = createStringItem("third-key", "third");
+
+        registry.register(firstItem);
+        registry.register(secondItem);
+        registry.register(thirdItem);
+
+        registry.getAccessor().saveItemsByKey(firstKey, thirdKey);
+
+        assertEquals("first", storageProvider.storedValues.get("first-key"));
+        assertNull(storageProvider.storedValues.get("second-key"));
+        assertEquals("third", storageProvider.storedValues.get("third-key"));
+        assertEquals(2, storageProvider.storeCount);
+    }
+
+    @Test
+    void saveItemsByKeyThrowsWhenOneKeyIsMissing() {
+        ConfigurationItemKey<String> firstKey = ConfigurationItemKey.of("first-key", String.class);
+        ConfigurationItemKey<String> missingKey = ConfigurationItemKey.of("missing-key", String.class);
+        registry.register(createStringItem("first-key", "value"));
+
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NoSuchElementException.class, () -> accessor.saveItemsByKey(firstKey, missingKey));
+    }
+
+    @Test
+    void saveItemsByKeyThrowsWhenKeysArrayIsNull() {
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NullPointerException.class, () -> accessor.saveItemsByKey((ConfigurationItemKey<?>[]) null));
+    }
+
+    @Test
+    void saveItemsByKeyThrowsWhenOneKeyIsNull() {
+        ConfigurationItemKey<String> firstKey = ConfigurationItemKey.of("first-key", String.class);
+        registry.register(createStringItem("first-key", "value"));
+
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NullPointerException.class, () -> accessor.saveItemsByKey(firstKey, null));
     }
 
     @Test
