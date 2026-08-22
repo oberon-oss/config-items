@@ -82,6 +82,18 @@ class StorableConfigurationItemsRegistryTest {
         assertSame(firstItem, previousItem);
         assertSame(secondItem, registry.getItem("test-key"));
     }
+    
+    @Test
+    void replaceRejectsNullItem() {
+        assertThrows(NullPointerException.class, () -> registry.replace(null));
+    }
+
+    @Test
+    void replaceRejectsItemWithNullKey() {
+        TestStorableConfigurationItem<String> item = createStringItem(null, "value");
+
+        assertThrows(NullPointerException.class, () -> registry.replace(item));
+    }
 
     @Test
     void getItemWithTypedKeyReturnsRegisteredItem() {
@@ -282,6 +294,15 @@ class StorableConfigurationItemsRegistryTest {
     }
 
     @Test
+    void setCurrentValueThrowsWhenValueTypeDoesNotMatchKey() {
+        ConfigurationItemKey<Integer> key = ConfigurationItemKey.of("test-key", Integer.class);
+        registry.register(createIntegerItem("test-key", 123));
+
+        //noinspection unchecked,rawtypes
+        assertThrows(ClassCastException.class, () -> registry.setCurrentValue((ConfigurationItemKey) key, "not-an-integer"));
+    }
+
+    @Test
     void setCurrentValueReturnsFalseWhenItemIsMissing() {
         ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
 
@@ -320,6 +341,15 @@ class StorableConfigurationItemsRegistryTest {
     }
 
     @Test
+    void setRequiredCurrentValueThrowsWhenValueTypeDoesNotMatchKey() {
+        ConfigurationItemKey<Integer> key = ConfigurationItemKey.of("test-key", Integer.class);
+        registry.register(createIntegerItem("test-key", 123));
+
+        //noinspection unchecked,rawtypes
+        assertThrows(ClassCastException.class, () -> registry.setRequiredCurrentValue((ConfigurationItemKey) key, "not-an-integer"));
+    }
+
+    @Test
     void setRequiredCurrentValueThrowsWhenItemIsMissing() {
         ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
 
@@ -342,6 +372,11 @@ class StorableConfigurationItemsRegistryTest {
     }
 
     @Test
+    void containsItemRejectsNullTypedKey() {
+        assertThrows(NullPointerException.class, () -> registry.containsItem(null));
+    }
+
+    @Test
     void containsItemUsesKeyIdOnly() {
         ConfigurationItemKey<Integer> integerKey = ConfigurationItemKey.of("test-key", Integer.class);
         registry.register(createStringItem("test-key", "value"));
@@ -359,6 +394,11 @@ class StorableConfigurationItemsRegistryTest {
     @Test
     void containsItemIdReturnsFalseWhenRawIdDoesNotExist() {
         assertFalse(registry.containsItemId("missing-key"));
+    }
+
+    @Test
+    void containsItemIdRejectsNullRawId() {
+        assertThrows(NullPointerException.class, () -> registry.containsItemId(null));
     }
 
     @Test
@@ -383,6 +423,11 @@ class StorableConfigurationItemsRegistryTest {
     }
 
     @Test
+    void unregisterRejectsNullTypedKey() {
+        assertThrows(NullPointerException.class, () -> registry.unregister(null));
+    }
+
+    @Test
     void unregisterByIdRemovesItem() {
         TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
 
@@ -398,6 +443,11 @@ class StorableConfigurationItemsRegistryTest {
     @Test
     void unregisterByIdReturnsNullWhenItemDoesNotExist() {
         assertNull(registry.unregisterById("missing-key"));
+    }
+
+    @Test
+    void unregisterByIdRejectsNullRawId() {
+        assertThrows(NullPointerException.class, () -> registry.unregisterById(null));
     }
 
     @Test
@@ -441,6 +491,47 @@ class StorableConfigurationItemsRegistryTest {
     }
 
     @Test
+    void loadItemsWithSpecificIdsLoadsOnlySelectedItems() {
+        TestStorableConfigurationItem<String> firstItem = createStringItem("first-key", "initial-first");
+        TestStorableConfigurationItem<Integer> secondItem = createIntegerItem("second-key", 123);
+        TestStorableConfigurationItem<String> thirdItem = createStringItem("third-key", "initial-third");
+
+        storageProvider.storedValues.put("first-key", "loaded-first");
+        storageProvider.storedValues.put("second-key", 456);
+        storageProvider.storedValues.put("third-key", "loaded-third");
+
+        registry.register(firstItem);
+        registry.register(secondItem);
+        registry.register(thirdItem);
+
+        registry.loadItems("first-key", "second-key");
+
+        assertEquals("loaded-first", firstItem.getCurrentValue());
+        assertEquals(456, secondItem.getCurrentValue());
+        assertEquals("initial-third", thirdItem.getCurrentValue());
+        assertEquals(2, storageProvider.loadCount);
+    }
+
+    @Test
+    void loadItemsWithSpecificIdsThrowsWhenOneIdIsMissing() {
+        registry.register(createStringItem("first-key", "value"));
+
+        assertThrows(NoSuchElementException.class, () -> registry.loadItems("first-key", "missing-key"));
+    }
+
+    @Test
+    void loadItemsWithSpecificIdsThrowsWhenIdsArrayIsNull() {
+        assertThrows(NullPointerException.class, () -> registry.loadItems((Object[]) null));
+    }
+
+    @Test
+    void loadItemsWithSpecificIdsThrowsWhenOneIdIsNull() {
+        registry.register(createStringItem("first-key", "value"));
+
+        assertThrows(NullPointerException.class, () -> registry.loadItems("first-key", null));
+    }
+
+    @Test
     void saveItemsSavesAllRegisteredItems() {
         TestStorableConfigurationItem<String> firstItem = createStringItem("first-key", "first");
         TestStorableConfigurationItem<Integer> secondItem = createIntegerItem("second-key", 123);
@@ -453,6 +544,69 @@ class StorableConfigurationItemsRegistryTest {
         assertEquals("first", storageProvider.storedValues.get("first-key"));
         assertEquals(123, storageProvider.storedValues.get("second-key"));
         assertEquals(2, storageProvider.storeCount);
+    }
+
+    @Test
+    void saveItemsWithSpecificIdsSavesOnlySelectedItems() {
+        TestStorableConfigurationItem<String> firstItem = createStringItem("first-key", "first");
+        TestStorableConfigurationItem<Integer> secondItem = createIntegerItem("second-key", 123);
+        TestStorableConfigurationItem<String> thirdItem = createStringItem("third-key", "third");
+
+        registry.register(firstItem);
+        registry.register(secondItem);
+        registry.register(thirdItem);
+
+        registry.saveItems("first-key", "third-key");
+
+        assertEquals("first", storageProvider.storedValues.get("first-key"));
+        assertNull(storageProvider.storedValues.get("second-key"));
+        assertEquals("third", storageProvider.storedValues.get("third-key"));
+        assertEquals(2, storageProvider.storeCount);
+    }
+
+    @Test
+    void saveItemsWithSpecificIdsThrowsWhenOneIdIsMissing() {
+        registry.register(createStringItem("first-key", "value"));
+
+        assertThrows(NoSuchElementException.class, () -> registry.saveItems("first-key", "missing-key"));
+    }
+
+    @Test
+    void saveItemsWithSpecificIdsThrowsWhenIdsArrayIsNull() {
+        assertThrows(NullPointerException.class, () -> registry.saveItems((Object[]) null));
+    }
+
+    @Test
+    void saveItemsWithSpecificIdsThrowsWhenOneIdIsNull() {
+        registry.register(createStringItem("first-key", "value"));
+
+        assertThrows(NullPointerException.class, () -> registry.saveItems("first-key", null));
+    }
+
+    @Test
+    void registryIsThreadSafe() throws InterruptedException {
+        int threadCount = 10;
+        int itemsPerThread = 100;
+        Thread[] threads = new Thread[threadCount];
+
+        for (int i = 0; i < threadCount; i++) {
+            final int threadIndex = i;
+            threads[i] = new Thread(() -> {
+                for (int j = 0; j < itemsPerThread; j++) {
+                    String key = "key-" + threadIndex + "-" + j;
+                    registry.register(createStringItem(key, "value"));
+                    registry.getItem(key);
+                    registry.unregisterById(key);
+                }
+            });
+            threads[i].start();
+        }
+
+        for (Thread thread : threads) {
+            thread.join();
+        }
+
+        assertEquals(0, registry.size());
     }
 
     private TestStorableConfigurationItem<String> createStringItem(String key, String currentValue) {
