@@ -276,7 +276,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        boolean updated = registry.setCurrentValue(key, "after");
+        boolean updated = registry.getAccessor().setCurrentValue(key, "after");
 
         assertTrue(updated);
         assertEquals("after", item.getCurrentValue());
@@ -289,7 +289,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        boolean updated = registry.setCurrentValue(key, null);
+        boolean updated = registry.getAccessor().setCurrentValue(key, null);
 
         assertTrue(updated);
         assertNull(item.getCurrentValue());
@@ -300,22 +300,24 @@ class StorableConfigurationItemsRegistryTest {
         ConfigurationItemKey<Integer> key = ConfigurationItemKey.of("test-key", Integer.class);
         registry.register(createIntegerItem("test-key", 123));
 
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
         //noinspection unchecked,rawtypes
-        assertThrows(ClassCastException.class, () -> registry.setCurrentValue((ConfigurationItemKey) key, "not-an-integer"));
+        assertThrows(ClassCastException.class, () -> accessor.setCurrentValue((ConfigurationItemKey) key, "not-an-integer"));
     }
 
     @Test
     void setCurrentValueReturnsFalseWhenItemIsMissing() {
         ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
 
-        boolean updated = registry.setCurrentValue(key, "value");
+        boolean updated = registry.getAccessor().setCurrentValue(key, "value");
 
         assertFalse(updated);
     }
 
     @Test
     void setCurrentValueRejectsNullKey() {
-        assertThrows(NullPointerException.class, () -> registry.setCurrentValue(null, "value"));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NullPointerException.class, () -> accessor.setCurrentValue(null, "value"));
     }
 
     @Test
@@ -325,7 +327,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        registry.setRequiredCurrentValue(key, "after");
+        registry.getAccessor().setRequiredCurrentValue(key, "after");
 
         assertEquals("after", item.getCurrentValue());
     }
@@ -337,7 +339,7 @@ class StorableConfigurationItemsRegistryTest {
 
         registry.register(item);
 
-        registry.setRequiredCurrentValue(key, null);
+        registry.getAccessor().setRequiredCurrentValue(key, null);
 
         assertNull(item.getCurrentValue());
     }
@@ -347,15 +349,17 @@ class StorableConfigurationItemsRegistryTest {
         ConfigurationItemKey<Integer> key = ConfigurationItemKey.of("test-key", Integer.class);
         registry.register(createIntegerItem("test-key", 123));
 
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
         //noinspection unchecked,rawtypes
-        assertThrows(ClassCastException.class, () -> registry.setRequiredCurrentValue((ConfigurationItemKey) key, "not-an-integer"));
+        assertThrows(ClassCastException.class, () -> accessor.setRequiredCurrentValue((ConfigurationItemKey) key, "not-an-integer"));
     }
 
     @Test
     void setRequiredCurrentValueThrowsWhenItemIsMissing() {
         ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
 
-        assertThrows(NoSuchElementException.class, () -> registry.setRequiredCurrentValue(key, "value"));
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NoSuchElementException.class, () -> accessor.setRequiredCurrentValue(key, "value"));
     }
 
     @Test

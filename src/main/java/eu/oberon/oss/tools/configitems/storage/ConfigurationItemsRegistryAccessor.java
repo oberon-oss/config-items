@@ -60,6 +60,38 @@ public interface ConfigurationItemsRegistryAccessor {
     <A> @Nullable A getRequiredCurrentValue(ConfigurationItemKey<A> key);
 
     /**
+     * Sets the current value of a registered item.
+     * <p>
+     * A {@code null} value is allowed and is delegated to the registered item.
+     * </p>
+     *
+     * @param key          The typed key of the item.
+     * @param currentValue The new current value.
+     * @param <A>          The application-level value type.
+     *
+     * @return {@code true} if the item was found and updated, otherwise {@code false}.
+     *
+     * @throws NullPointerException if {@code key} is {@code null}.
+     * @throws ClassCastException   if {@code currentValue} is not assignable to the key's value type.
+     * @since 1.0.0
+     */
+    <A> boolean setCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue);
+
+    /**
+     * Sets the current value of a registered item.
+     *
+     * @param key          The typed key of the item.
+     * @param currentValue The new current value.
+     * @param <A>          The application-level value type.
+     *
+     * @throws NullPointerException   if {@code key} is {@code null}.
+     * @throws NoSuchElementException if no item exists for the key.
+     * @throws ClassCastException     if {@code currentValue} is not assignable to the key's value type.
+     * @since 1.0.0
+     */
+    <A> void setRequiredCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue);
+
+    /**
      * Loads all currently registered items.
      * <p>
      * This method operates on a stable snapshot of the registry. Items registered, removed, or replaced while this method is running are not guaranteed to

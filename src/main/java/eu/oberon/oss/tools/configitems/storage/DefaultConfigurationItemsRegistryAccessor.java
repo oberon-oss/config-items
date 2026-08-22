@@ -59,6 +59,36 @@ final class DefaultConfigurationItemsRegistryAccessor implements ConfigurationIt
     }
 
     @Override
+    public <A> boolean setCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
+
+        if (currentValue != null) {
+            key.valueType().cast(currentValue);
+        }
+
+        StorableConfigurationItem<Object, Object, A, Object> item = registry.getItem(key);
+
+        if (item == null) {
+            return false;
+        }
+
+        item.setCurrentValue(currentValue);
+        return true;
+    }
+
+    @Override
+    public <A> void setRequiredCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
+
+        if (currentValue != null) {
+            key.valueType().cast(currentValue);
+        }
+
+        StorableConfigurationItem<Object, Object, A, Object> item = registry.getRequiredItem(key);
+        item.setCurrentValue(currentValue);
+    }
+
+    @Override
     public void loadItems() {
         for (RegisteredConfigurationItem item : registry.registeredItemsSnapshot()) {
             item.load();

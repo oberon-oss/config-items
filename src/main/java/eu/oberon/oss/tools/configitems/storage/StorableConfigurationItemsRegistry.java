@@ -109,38 +109,6 @@ public interface StorableConfigurationItemsRegistry {
     <K, A, P> @NotNull StorableConfigurationItem<Object, K, A, P> getRequiredItem(ConfigurationItemKey<A> key);
 
     /**
-     * Sets the current value of a registered item.
-     * <p>
-     * A {@code null} value is allowed and is delegated to the registered item.
-     * </p>
-     *
-     * @param key          The typed key of the item.
-     * @param currentValue The new current value.
-     * @param <A>          The application-level value type.
-     *
-     * @return {@code true} if the item was found and updated, otherwise {@code false}.
-     *
-     * @throws NullPointerException if {@code key} is {@code null}.
-     * @throws ClassCastException   if {@code currentValue} is not assignable to the key's value type.
-     * @since 1.0.0
-     */
-    <A> boolean setCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue);
-
-    /**
-     * Sets the current value of a registered item.
-     *
-     * @param key          The typed key of the item.
-     * @param currentValue The new current value.
-     * @param <A>          The application-level value type.
-     *
-     * @throws NullPointerException   if {@code key} is {@code null}.
-     * @throws NoSuchElementException if no item exists for the key.
-     * @throws ClassCastException     if {@code currentValue} is not assignable to the key's value type.
-     * @since 1.0.0
-     */
-    <A> void setRequiredCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue);
-
-    /**
      * Checks whether an item is registered for the provided typed key.
      *
      * @param key The typed key to check.

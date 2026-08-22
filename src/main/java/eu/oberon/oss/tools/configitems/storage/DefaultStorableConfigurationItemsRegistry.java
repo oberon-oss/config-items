@@ -111,36 +111,6 @@ public class DefaultStorableConfigurationItemsRegistry implements StorableConfig
     }
 
     @Override
-    public <A> boolean setCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue) {
-        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
-
-        if (currentValue != null) {
-            key.valueType().cast(currentValue);
-        }
-
-        StorableConfigurationItem<Object, Object, A, Object> item = getItem(key);
-
-        if (item == null) {
-            return false;
-        }
-
-        item.setCurrentValue(currentValue);
-        return true;
-    }
-
-    @Override
-    public <A> void setRequiredCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue) {
-        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
-
-        if (currentValue != null) {
-            key.valueType().cast(currentValue);
-        }
-
-        StorableConfigurationItem<Object, Object, A, Object> item = getRequiredItem(key);
-        item.setCurrentValue(currentValue);
-    }
-
-    @Override
     public boolean containsItem(ConfigurationItemKey<?> key) {
         Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
         return storableConfigurationItems.containsKey(key.id());
