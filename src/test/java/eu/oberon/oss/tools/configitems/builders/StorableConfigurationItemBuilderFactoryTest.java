@@ -89,7 +89,7 @@ class StorableConfigurationItemBuilderFactoryTest {
                         .setApplicationDataType(Object.class)
                         .setStorageType((Class<Object>) (Class) String.class)
                         .setToDataType(value -> value)
-                        .setToStorageType(value -> 123);
+                        .setToStorageType(_ -> 123);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
 

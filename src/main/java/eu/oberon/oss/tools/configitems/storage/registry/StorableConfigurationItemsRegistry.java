@@ -205,6 +205,7 @@ public interface StorableConfigurationItemsRegistry {
      * @throws NullPointerException if {@code listener} is {@code null}.
      * @since 1.0.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean removeListener(ConfigurationItemRegistryListener listener);
 
 }

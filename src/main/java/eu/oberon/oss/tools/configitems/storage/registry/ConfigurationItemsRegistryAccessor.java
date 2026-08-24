@@ -120,6 +120,7 @@ public interface ConfigurationItemsRegistryAccessor {
      * @throws NoSuchElementException if no item exists for the key.
      * @since 1.0.0
      */
+    @SuppressWarnings("UnusedReturnValue")
     <A> boolean hasRequiredUnsavedChanges(ConfigurationItemKey<A> key);
 
     /**

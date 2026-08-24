@@ -3,6 +3,7 @@ package eu.oberon.oss.tools.configitems.storage;
 import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a configuration item that can be stored and retrieved from a persistent storage. Extends {@link ConfigurationItem}, with additional functionality
@@ -36,7 +37,7 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
      * @since 1.0.0
      */
     @Override
-    StorageProvider storageProvider();
+    @NotNull StorageProvider storageProvider();
 
     /**
      * Loads the configuration item from persistent storage.
