@@ -53,7 +53,9 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <sourceFileExcludes>
+                        <!-- Exclude enums that are self-explanatory -->
                         <sourceFileExclude>**/ConfigItems.java</sourceFileExclude>
+                        <sourceFileExclude>**/ConfigurationItemRegistryEventType.java</sourceFileExclude>
                     </sourceFileExcludes>
                 </configuration>
             </plugin>

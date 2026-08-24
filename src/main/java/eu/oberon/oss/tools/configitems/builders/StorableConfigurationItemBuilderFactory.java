@@ -1,7 +1,7 @@
 package eu.oberon.oss.tools.configitems.builders;
 
-import eu.oberon.oss.tools.configitems.storage.PreferencesStorageProvider;
-import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.configitems.storage.providers.PreferencesStorageProvider;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 import eu.oberon.oss.tools.converters.ConvertersRegistry;
 
 import java.util.Objects;

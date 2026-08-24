@@ -1,4 +1,6 @@
-package eu.oberon.oss.tools.configitems.storage;
+package eu.oberon.oss.tools.configitems.storage.providers;
+
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilderFactory;

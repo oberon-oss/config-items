@@ -2,7 +2,7 @@ package eu.oberon.oss.tools.configitems.builders;
 
 import eu.oberon.oss.tools.configitems.storage.DefaultStorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
-import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 
 import java.util.function.Function;
 

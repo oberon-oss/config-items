@@ -1,4 +1,6 @@
-package eu.oberon.oss.tools.configitems.storage;
+package eu.oberon.oss.tools.configitems.storage.providers;
+
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 
 /**
  * Interface for managing the storage and retrieval of configuration items in a persistent storage system. This provides generic methods for storing and loading

@@ -1,10 +1,9 @@
-package eu.oberon.oss.tools.configitems;
+package eu.oberon.oss.tools.configitems.builders;
 
-import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder;
-import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilderFactory;
-import eu.oberon.oss.tools.configitems.storage.PreferencesStorageProvider;
+import eu.oberon.oss.tools.configitems.ConfigTestEnum;
+import eu.oberon.oss.tools.configitems.storage.providers.PreferencesStorageProvider;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
-import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 import eu.oberon.oss.tools.converters.ConvertersRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

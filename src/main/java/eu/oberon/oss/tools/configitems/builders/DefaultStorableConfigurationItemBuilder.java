@@ -7,7 +7,7 @@ import eu.oberon.oss.tools.configitems.items.DefaultConfigurationItem;
 import eu.oberon.oss.tools.configitems.items.DefaultConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.DefaultStorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
-import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 import eu.oberon.oss.tools.converters.ConvertersRegistry;
 import eu.oberon.oss.tools.converters.string.Converter;
 import org.jetbrains.annotations.Nullable;

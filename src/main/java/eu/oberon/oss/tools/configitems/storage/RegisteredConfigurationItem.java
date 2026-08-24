@@ -1,5 +1,6 @@
 package eu.oberon.oss.tools.configitems.storage;
 
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**

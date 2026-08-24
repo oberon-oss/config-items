@@ -1,6 +1,7 @@
-package eu.oberon.oss.tools.configitems.storage;
+package eu.oberon.oss.tools.configitems.storage.providers;
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 
 
 import java.util.Set;

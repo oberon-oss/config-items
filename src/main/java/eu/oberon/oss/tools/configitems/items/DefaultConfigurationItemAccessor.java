@@ -1,6 +1,6 @@
 package eu.oberon.oss.tools.configitems.items;
 
-import eu.oberon.oss.tools.configitems.storage.StorageProvider;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 
 import java.util.function.Function;
 

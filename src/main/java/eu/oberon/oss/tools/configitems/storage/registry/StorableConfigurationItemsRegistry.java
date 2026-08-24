@@ -1,5 +1,9 @@
-package eu.oberon.oss.tools.configitems.storage;
+package eu.oberon.oss.tools.configitems.storage.registry;
 
+import eu.oberon.oss.tools.configitems.storage.ConfigurationItemKey;
+import eu.oberon.oss.tools.configitems.storage.RegisteredConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.registry.listeners.ConfigurationItemRegistryListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -180,4 +184,27 @@ public interface StorableConfigurationItemsRegistry {
      * @since 1.0.0
      */
     ConfigurationItemsRegistryAccessor getAccessor();
+
+    /**
+     * Registers a listener that will be notified when registry events occur.
+     *
+     * @param listener The listener to register.
+     *
+     * @throws NullPointerException if {@code listener} is {@code null}.
+     * @since 1.0.0
+     */
+    void addListener(ConfigurationItemRegistryListener listener);
+
+    /**
+     * Removes a previously registered listener.
+     *
+     * @param listener The listener to remove.
+     *
+     * @return {@code true} if the listener was registered and removed, otherwise {@code false}.
+     *
+     * @throws NullPointerException if {@code listener} is {@code null}.
+     * @since 1.0.0
+     */
+    boolean removeListener(ConfigurationItemRegistryListener listener);
+
 }

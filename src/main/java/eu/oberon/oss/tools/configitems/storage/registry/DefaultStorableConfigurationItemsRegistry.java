@@ -1,20 +1,22 @@
-package eu.oberon.oss.tools.configitems.storage;
+package eu.oberon.oss.tools.configitems.storage.registry;
 
+import eu.oberon.oss.tools.configitems.storage.ConfigurationItemKey;
+import eu.oberon.oss.tools.configitems.storage.RegisteredConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
+import eu.oberon.oss.tools.configitems.storage.registry.listeners.ConfigurationItemRegistryEvent;
+import eu.oberon.oss.tools.configitems.storage.registry.listeners.ConfigurationItemRegistryListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import static eu.oberon.oss.tools.configitems.ConfigItems.CONFIGURATION_ALREADY_DEFINED;
-import static eu.oberon.oss.tools.configitems.ConfigItems.CONFIGURATION_ITEM_KEY_MUST_NOT_BE_NULL;
-import static eu.oberon.oss.tools.configitems.ConfigItems.NO_CONFIGURATION_ITEM_REGISTERED;
-import static eu.oberon.oss.tools.configitems.ConfigItems.PARAMETER_MUST_NOT_BE_NULL;
+import static eu.oberon.oss.tools.configitems.ConfigItems.*;
+import static eu.oberon.oss.tools.configitems.storage.registry.listeners.ConfigurationItemRegistryEventType.*;
 
 /**
  * Registry for {@link StorableConfigurationItem} instances.
@@ -28,6 +30,8 @@ import static eu.oberon.oss.tools.configitems.ConfigItems.PARAMETER_MUST_NOT_BE_
  * @since 1.0.0
  */
 public class DefaultStorableConfigurationItemsRegistry implements StorableConfigurationItemsRegistry {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultStorableConfigurationItemsRegistry.class);
+
     static final String PARAMETER_ITEM_ID = "itemId";
     static final String PARAMETER_ITEM_IDS = "itemIds";
     static final String PARAMETER_KEY = "key";
@@ -36,13 +40,16 @@ public class DefaultStorableConfigurationItemsRegistry implements StorableConfig
 
     private final Map<Object, RegisteredConfigurationItem> storableConfigurationItems;
     private final ConfigurationItemsRegistryAccessor accessor;
+    private final List<ConfigurationItemRegistryListener> listeners;
 
     /**
      * Default constructor.
      */
     public DefaultStorableConfigurationItemsRegistry() {
         storableConfigurationItems = new ConcurrentHashMap<>();
+        listeners = new CopyOnWriteArrayList<>();
         accessor = new DefaultConfigurationItemsRegistryAccessor(this);
+
     }
 
     Collection<RegisteredConfigurationItem> registeredItemsSnapshot() {
@@ -71,6 +78,8 @@ public class DefaultStorableConfigurationItemsRegistry implements StorableConfig
         if (previousItem != null) {
             throw CONFIGURATION_ALREADY_DEFINED.getException(IllegalArgumentException.class, key);
         }
+
+        notifyListeners(new ConfigurationItemRegistryEvent(REGISTERED, key, storableConfigurationItem, null));
     }
 
     @Override
@@ -78,7 +87,11 @@ public class DefaultStorableConfigurationItemsRegistry implements StorableConfig
         Objects.requireNonNull(storableConfigurationItem, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_STORABLE_CONFIGURATION_ITEM));
 
         I key = Objects.requireNonNull(storableConfigurationItem.getKey(), CONFIGURATION_ITEM_KEY_MUST_NOT_BE_NULL.getMessage());
-        return storableConfigurationItems.put(key, storableConfigurationItem);
+
+        RegisteredConfigurationItem previousItem = storableConfigurationItems.put(key, storableConfigurationItem);
+        notifyListeners(new ConfigurationItemRegistryEvent(REPLACED, key, storableConfigurationItem, previousItem));
+
+        return previousItem;
     }
 
     @SuppressWarnings("unchecked")
@@ -125,18 +138,34 @@ public class DefaultStorableConfigurationItemsRegistry implements StorableConfig
     @Override
     public @Nullable RegisteredConfigurationItem unregister(ConfigurationItemKey<?> key) {
         Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
-        return storableConfigurationItems.remove(key.id());
+
+        RegisteredConfigurationItem removedItem = storableConfigurationItems.remove(key.id());
+        if (removedItem != null) {
+            notifyListeners(new ConfigurationItemRegistryEvent(UNREGISTERED, key.id(), removedItem, null));
+        }
+
+        return removedItem;
     }
 
     @Override
     public @Nullable RegisteredConfigurationItem unregisterById(Object itemId) {
         Objects.requireNonNull(itemId, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_ITEM_ID));
-        return storableConfigurationItems.remove(itemId);
+
+        RegisteredConfigurationItem removedItem = storableConfigurationItems.remove(itemId);
+        if (removedItem != null) {
+            notifyListeners(new ConfigurationItemRegistryEvent(UNREGISTERED, itemId, removedItem, null));
+        }
+
+        return removedItem;
     }
 
     @Override
     public void clear() {
+        if (storableConfigurationItems.isEmpty()) {
+            return;
+        }
         storableConfigurationItems.clear();
+        notifyListeners(new ConfigurationItemRegistryEvent(CLEARED, null, null, null));
     }
 
     @Override
@@ -147,5 +176,25 @@ public class DefaultStorableConfigurationItemsRegistry implements StorableConfig
     @Override
     public ConfigurationItemsRegistryAccessor getAccessor() {
         return accessor;
+    }
+
+    @Override
+    public void addListener(ConfigurationItemRegistryListener listener) {
+        listeners.add(Objects.requireNonNull(listener, PARAMETER_MUST_NOT_BE_NULL.getMessage("listener")));
+    }
+
+    @Override
+    public boolean removeListener(ConfigurationItemRegistryListener listener) {
+        return listeners.remove(Objects.requireNonNull(listener, PARAMETER_MUST_NOT_BE_NULL.getMessage("listener")));
+    }
+
+    void notifyListeners(ConfigurationItemRegistryEvent event) {
+        for (ConfigurationItemRegistryListener listener : listeners) {
+            try {
+                listener.onRegistryEvent(event);
+            } catch (RuntimeException e) {
+                LOGGER.error("Error while notifying listener: {}", e.getMessage(), e);
+            }
+        }
     }
 }

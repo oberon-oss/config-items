@@ -2,6 +2,7 @@ package eu.oberon.oss.tools.configitems.storage;
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

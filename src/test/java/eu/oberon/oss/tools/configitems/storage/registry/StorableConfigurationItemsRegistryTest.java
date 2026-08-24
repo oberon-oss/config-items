@@ -1,6 +1,13 @@
-package eu.oberon.oss.tools.configitems.storage;
+package eu.oberon.oss.tools.configitems.storage.registry;
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
+import eu.oberon.oss.tools.configitems.storage.ConfigurationItemKey;
+import eu.oberon.oss.tools.configitems.storage.RegisteredConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
+import eu.oberon.oss.tools.configitems.storage.registry.listeners.ConfigurationItemRegistryEvent;
+import eu.oberon.oss.tools.configitems.storage.registry.listeners.ConfigurationItemRegistryEventType;
+import eu.oberon.oss.tools.configitems.storage.registry.listeners.ConfigurationItemRegistryListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -938,5 +945,210 @@ class StorableConfigurationItemsRegistryTest {
 
         assertEquals("changed", storageProvider.storedValues.get("test-key"));
         assertFalse(registry.getAccessor().hasUnsavedChanges(key));
+    }
+
+    @Test
+    void addListenerAddsListenerToRegistry() {
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        ConfigurationItemRegistryListener listener = events::add;
+
+        registry.addListener(listener);
+
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
+        registry.register(item);
+
+        assertEquals(1, events.size());
+        assertEquals(ConfigurationItemRegistryEventType.REGISTERED, events.getFirst().type());
+        assertEquals("test-key", events.getFirst().key());
+        assertSame(item, events.getFirst().item());
+    }
+
+    @Test
+    void removeListenerRemovesListenerFromRegistry() {
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        ConfigurationItemRegistryListener listener = events::add;
+
+        registry.addListener(listener);
+        registry.removeListener(listener);
+
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
+        registry.register(item);
+
+        assertTrue(events.isEmpty());
+    }
+
+    @Test
+    void registerNotifiesRegisteredEvent() {
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
+        registry.register(item);
+
+        assertEquals(1, events.size());
+        ConfigurationItemRegistryEvent event = events.getFirst();
+        assertEquals(ConfigurationItemRegistryEventType.REGISTERED, event.type());
+        assertEquals("test-key", event.key());
+        assertSame(item, event.item());
+        assertNull(event.previousItem());
+    }
+
+    @Test
+    void replaceNotifiesReplacedEvent() {
+        TestStorableConfigurationItem<String> firstItem = createStringItem("test-key", "first");
+        registry.register(firstItem);
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        TestStorableConfigurationItem<String> secondItem = createStringItem("test-key", "second");
+        registry.replace(secondItem);
+
+        assertEquals(1, events.size());
+        ConfigurationItemRegistryEvent event = events.getFirst();
+        assertEquals(ConfigurationItemRegistryEventType.REPLACED, event.type());
+        assertEquals("test-key", event.key());
+        assertSame(secondItem, event.item());
+        assertSame(firstItem, event.previousItem());
+    }
+
+    @Test
+    void unregisterNotifiesUnregisteredEvent() {
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
+        registry.register(item);
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.unregister(ConfigurationItemKey.of("test-key", String.class));
+
+        assertEquals(1, events.size());
+        ConfigurationItemRegistryEvent event = events.getFirst();
+        assertEquals(ConfigurationItemRegistryEventType.UNREGISTERED, event.type());
+        assertEquals("test-key", event.key());
+        assertSame(item, event.item());
+    }
+
+    @Test
+    void unregisterByIdNotifiesUnregisteredEvent() {
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
+        registry.register(item);
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.unregisterById("test-key");
+
+        assertEquals(1, events.size());
+        ConfigurationItemRegistryEvent event = events.getFirst();
+        assertEquals(ConfigurationItemRegistryEventType.UNREGISTERED, event.type());
+        assertEquals("test-key", event.key());
+        assertSame(item, event.item());
+    }
+
+    @Test
+    void clearNotifiesClearedEvent() {
+        registry.register(createStringItem("test-key", "value"));
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.clear();
+
+        assertEquals(1, events.size());
+        assertEquals(ConfigurationItemRegistryEventType.CLEARED, events.getFirst().type());
+    }
+
+    @Test
+    void clearDoesNotNotifyIfEmpty() {
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.clear();
+
+        assertTrue(events.isEmpty());
+    }
+
+    @Test
+    void setCurrentValueNotifiesValueChangedEvent() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("test-key", String.class);
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "before");
+        registry.register(item);
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.getAccessor().setCurrentValue(key, "after");
+
+        assertEquals(1, events.size());
+        ConfigurationItemRegistryEvent event = events.getFirst();
+        assertEquals(ConfigurationItemRegistryEventType.VALUE_CHANGED, event.type());
+        assertEquals("test-key", event.key());
+        assertSame(item, event.item());
+    }
+
+    @Test
+    void setCurrentValueDoesNotNotifyIfValueIsSame() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("test-key", String.class);
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "same");
+        registry.register(item);
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.getAccessor().setCurrentValue(key, "same");
+
+        assertTrue(events.isEmpty());
+    }
+
+    @Test
+    void loadItemsNotifiesLoadedEvent() {
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "before");
+        registry.register(item);
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.getAccessor().loadItems();
+
+        assertEquals(1, events.size());
+        ConfigurationItemRegistryEvent event = events.getFirst();
+        assertEquals(ConfigurationItemRegistryEventType.LOADED, event.type());
+        assertEquals("test-key", event.key());
+        assertSame(item, event.item());
+    }
+
+    @Test
+    void saveItemsNotifiesSavedEvent() {
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "before");
+        registry.register(item);
+
+        List<ConfigurationItemRegistryEvent> events = new ArrayList<>();
+        registry.addListener(events::add);
+
+        registry.getAccessor().saveItems();
+
+        assertEquals(1, events.size());
+        ConfigurationItemRegistryEvent event = events.getFirst();
+        assertEquals(ConfigurationItemRegistryEventType.SAVED, event.type());
+        assertEquals("test-key", event.key());
+        assertSame(item, event.item());
+    }
+
+    @Test
+    void notifyListenersHandlesExceptions() {
+        List<ConfigurationItemRegistryEvent> receivedEvents = new ArrayList<>();
+        ConfigurationItemRegistryListener failingListener = _ -> {
+            throw new RuntimeException("Test exception");
+        };
+        ConfigurationItemRegistryListener workingListener = receivedEvents::add;
+
+        registry.addListener(failingListener);
+        registry.addListener(workingListener);
+
+        registry.register(createStringItem("test-key", "value"));
+
+        assertEquals(1, receivedEvents.size());
+        assertEquals(ConfigurationItemRegistryEventType.REGISTERED, receivedEvents.getFirst().type());
     }
 }

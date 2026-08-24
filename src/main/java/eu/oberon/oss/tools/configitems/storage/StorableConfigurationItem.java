@@ -2,6 +2,7 @@ package eu.oberon.oss.tools.configitems.storage;
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
 import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
+import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 
 /**
  * Represents a configuration item that can be stored and retrieved from a persistent storage. Extends {@link ConfigurationItem}, with additional functionality
