@@ -42,4 +42,13 @@ public record DefaultStorableConfigurationItem<I, K, A, P>(ConfigurationItem<I, 
         return configurationItem.getDefaultValue();
     }
 
+    @Override
+    public boolean hasUnsavedChanges() {
+        return configurationItem.hasUnsavedChanges();
+    }
+
+    @Override
+    public void clearUnsavedChanges() {
+        configurationItem.clearUnsavedChanges();
+    }
 }

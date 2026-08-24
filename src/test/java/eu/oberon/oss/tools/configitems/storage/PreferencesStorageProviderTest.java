@@ -383,6 +383,16 @@ class PreferencesStorageProviderTest {
         public Object getDefaultValue() {
             return null;
         }
+
+        @Override
+        public boolean hasUnsavedChanges() {
+            return false;
+        }
+
+        @Override
+        public void clearUnsavedChanges() {
+            // Intentionally empty - it's test code
+        }
     }
 
     private enum IdentityEnum {

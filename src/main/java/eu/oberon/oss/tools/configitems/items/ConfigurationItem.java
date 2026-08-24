@@ -42,6 +42,24 @@ public interface ConfigurationItem<I, A> {
      */
     @Nullable A getCurrentValue();
 
+    /**
+     * Indicates whether the current value has been changed since the item was created, loaded, or saved.
+     *
+     * @return {@code true} if the current value has changed, otherwise {@code false}.
+     *
+     * @since 1.0.0
+     */
+    boolean hasUnsavedChanges();
+
+    /**
+     * Marks the current value as synchronized with persistent storage.
+     * <p>
+     * After calling this method, {@link #hasUnsavedChanges()} should return {@code false} until the current value changes again.
+     * </p>
+     *
+     * @since 1.0.0
+     */
+    void clearUnsavedChanges();
 
     /**
      * Retrieves the default value of the configuration item.

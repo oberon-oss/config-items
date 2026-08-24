@@ -21,6 +21,7 @@ public final class DefaultConfigurationItem<I, A> implements ConfigurationItem<I
     private final I itemID;
     private final A defaultValue;
     private A currentValue;
+    private boolean changed;
 
     /**
      * Creates a new {@link ConfigurationItem}.
@@ -31,9 +32,10 @@ public final class DefaultConfigurationItem<I, A> implements ConfigurationItem<I
      * @since 1.0.0
      */
     public DefaultConfigurationItem(I itemID, @Nullable A defaultValue) {
-        this.itemID = Objects.requireNonNull(itemID,PARAMETER_MUST_NOT_BE_NULL.getMessage("itemID"));
+        this.itemID = Objects.requireNonNull(itemID, PARAMETER_MUST_NOT_BE_NULL.getMessage("itemID"));
         this.defaultValue = defaultValue;
         this.currentValue = defaultValue;
+        this.changed = false;
     }
 
     @Override
@@ -43,7 +45,10 @@ public final class DefaultConfigurationItem<I, A> implements ConfigurationItem<I
 
     @Override
     public void setCurrentValue(A value) {
-        currentValue = value;
+        if (!Objects.equals(currentValue, value)) {
+            currentValue = value;
+            changed = true;
+        }
     }
 
     @Override
@@ -54,5 +59,15 @@ public final class DefaultConfigurationItem<I, A> implements ConfigurationItem<I
     @Override
     public @Nullable A getDefaultValue() {
         return defaultValue;
+    }
+
+    @Override
+    public boolean hasUnsavedChanges() {
+        return changed;
+    }
+
+    @Override
+    public void clearUnsavedChanges() {
+        changed = false;
     }
 }

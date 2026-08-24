@@ -44,4 +44,23 @@ public interface RegisteredConfigurationItem {
      * @since 1.0.0
      */
     void save();
+
+    /**
+     * Determines if there are any changes to the configuration item that have not been saved to persistent storage.
+     *
+     * @return true if there are unsaved changes, false otherwise.
+     *
+     * @since 1.0.0
+     */
+    boolean hasUnsavedChanges();
+
+    /**
+     * Marks the current state of this configuration item as synchronized with persistent storage.
+     * <p>
+     * After calling this method, {@link #hasUnsavedChanges()} should return {@code false} until the current value changes again.
+     * </p>
+     *
+     * @since 1.0.0
+     */
+    void clearUnsavedChanges();
 }

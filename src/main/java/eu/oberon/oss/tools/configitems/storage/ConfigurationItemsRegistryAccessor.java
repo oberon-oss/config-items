@@ -92,6 +92,35 @@ public interface ConfigurationItemsRegistryAccessor {
     <A> void setRequiredCurrentValue(ConfigurationItemKey<A> key, @Nullable A currentValue);
 
     /**
+     * Indicates whether the current value has unsaved changes.
+     * <p>
+     * Implementations should return {@code true} when the current value has changed since the item was created, loaded, or saved.
+     * </p>
+     *
+     * @param key The typed key of the item.
+     * @param <A> The application-level value type.
+     *
+     * @return {@code true} if the current value has unsaved changes, otherwise {@code false}.
+     *
+     * @since 1.0.0
+     */
+    <A> boolean hasUnsavedChanges(ConfigurationItemKey<A> key);
+
+    /**
+     * Checks whether the current value of a required, registered item has unsaved changes.
+     *
+     * @param key The typed key of the item.
+     * @param <A> The application-level value type.
+     *
+     * @return {@code true} if the current value has unsaved changes, otherwise {@code false}.
+     *
+     * @throws NullPointerException   if {@code key} is {@code null}.
+     * @throws NoSuchElementException if no item exists for the key.
+     * @since 1.0.0
+     */
+    <A> boolean hasRequiredUnsavedChanges(ConfigurationItemKey<A> key);
+
+    /**
      * Loads all currently registered items.
      * <p>
      * This method operates on a stable snapshot of the registry. Items registered, removed, or replaced while this method is running are not guaranteed to

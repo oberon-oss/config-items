@@ -45,6 +45,7 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
     @Override
     default void load() {
         storageProvider().loadConfigurationItem(this);
+        clearUnsavedChanges();
     }
 
     /**
@@ -55,5 +56,6 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
     @Override
     default void save() {
         storageProvider().storeConfigurationItem(this);
+        clearUnsavedChanges();
     }
 }

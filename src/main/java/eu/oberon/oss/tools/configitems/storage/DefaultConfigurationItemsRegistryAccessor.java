@@ -89,6 +89,24 @@ final class DefaultConfigurationItemsRegistryAccessor implements ConfigurationIt
     }
 
     @Override
+    public <A> boolean hasUnsavedChanges(ConfigurationItemKey<A> key) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
+
+        StorableConfigurationItem<Object, Object, A, Object> item = registry.getItem(key);
+
+        return item != null && item.hasUnsavedChanges();
+    }
+
+    @Override
+    public <A> boolean hasRequiredUnsavedChanges(ConfigurationItemKey<A> key) {
+        Objects.requireNonNull(key, PARAMETER_MUST_NOT_BE_NULL.getMessage(PARAMETER_KEY));
+
+        StorableConfigurationItem<Object, Object, A, Object> item = registry.getRequiredItem(key);
+
+        return item.hasUnsavedChanges();
+    }
+
+    @Override
     public void loadItems() {
         for (RegisteredConfigurationItem item : registry.registeredItemsSnapshot()) {
             item.load();

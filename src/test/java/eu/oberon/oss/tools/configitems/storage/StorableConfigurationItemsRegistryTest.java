@@ -7,10 +7,7 @@ import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,7 +79,7 @@ class StorableConfigurationItemsRegistryTest {
         assertSame(firstItem, previousItem);
         assertSame(secondItem, registry.getItem("test-key"));
     }
-    
+
     @Test
     void replaceRejectsNullItem() {
         assertThrows(NullPointerException.class, () -> registry.replace(null));
@@ -773,6 +770,7 @@ class StorableConfigurationItemsRegistryTest {
         private final StorageProvider storageProvider;
 
         private A currentValue;
+        private boolean changed;
 
         private TestStorableConfigurationItem(String key, Class<A> valueType, A currentValue, StorageProvider storageProvider) {
             this.key = key;
@@ -833,7 +831,10 @@ class StorableConfigurationItemsRegistryTest {
 
         @Override
         public void setCurrentValue(A value) {
-            currentValue = value;
+            if (!Objects.equals(currentValue, value)) {
+                currentValue = value;
+                changed = true;
+            }
         }
 
         @Override
@@ -842,8 +843,100 @@ class StorableConfigurationItemsRegistryTest {
         }
 
         @Override
+        public boolean hasUnsavedChanges() {
+            return changed;
+        }
+
+        @Override
+        public void clearUnsavedChanges() {
+            changed = false;
+        }
+
+        @Override
         public @Nullable A getDefaultValue() {
             return null;
         }
+    }
+
+    @Test
+    void hasUnsavedChangesReturnsFalseForNewItem() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("test-key", String.class);
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
+
+        registry.register(item);
+
+        assertFalse(registry.getAccessor().hasUnsavedChanges(key));
+    }
+
+    @Test
+    void hasUnsavedChangesReturnsTrueAfterValueChange() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("test-key", String.class);
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "before");
+
+        registry.register(item);
+
+        registry.getAccessor().setCurrentValue(key, "after");
+
+        assertTrue(registry.getAccessor().hasUnsavedChanges(key));
+    }
+
+    @Test
+    void hasUnsavedChangesReturnsFalseWhenSettingSameValue() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("test-key", String.class);
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "value");
+
+        registry.register(item);
+
+        registry.getAccessor().setCurrentValue(key, "value");
+
+        assertFalse(registry.getAccessor().hasUnsavedChanges(key));
+    }
+
+    @Test
+    void hasUnsavedChangesReturnsFalseWhenItemIsMissing() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
+
+        assertFalse(registry.getAccessor().hasUnsavedChanges(key));
+    }
+
+    @Test
+    void hasRequiredUnsavedChangesThrowsWhenItemIsMissing() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("missing-key", String.class);
+
+        ConfigurationItemsRegistryAccessor accessor = registry.getAccessor();
+        assertThrows(NoSuchElementException.class, () -> accessor.hasRequiredUnsavedChanges(key));
+    }
+
+    @Test
+    void loadClearsUnsavedChanges() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("test-key", String.class);
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "before");
+
+        registry.register(item);
+        registry.getAccessor().setCurrentValue(key, "changed");
+
+        assertTrue(registry.getAccessor().hasUnsavedChanges(key));
+
+        storageProvider.storedValues.put("test-key", "loaded");
+        registry.getAccessor().loadItemsByKey(key);
+
+        assertEquals("loaded", item.getCurrentValue());
+        assertFalse(registry.getAccessor().hasUnsavedChanges(key));
+    }
+
+    @Test
+    void saveClearsUnsavedChanges() {
+        ConfigurationItemKey<String> key = ConfigurationItemKey.of("test-key", String.class);
+        TestStorableConfigurationItem<String> item = createStringItem("test-key", "before");
+
+        registry.register(item);
+        registry.getAccessor().setCurrentValue(key, "changed");
+
+        assertTrue(registry.getAccessor().hasUnsavedChanges(key));
+
+        registry.getAccessor().saveItemsByKey(key);
+
+        assertEquals("changed", storageProvider.storedValues.get("test-key"));
+        assertFalse(registry.getAccessor().hasUnsavedChanges(key));
     }
 }
