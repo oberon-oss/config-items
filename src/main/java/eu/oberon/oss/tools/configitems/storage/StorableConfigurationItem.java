@@ -27,6 +27,7 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
      *
      * @since 1.0.0
      */
+    @SuppressWarnings("unused")
     Class<I> intKeyType();
 
     /**
@@ -36,6 +37,7 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
      *
      * @since 1.0.0
      */
+    @SuppressWarnings("unused")
     Class<K> extKeyType();
 
     /**

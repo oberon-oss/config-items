@@ -413,7 +413,7 @@ class PreferencesStorageProviderTest {
         @Override public void put(String key, String value) {}
         @Override public String get(String key, String def) { return null; }
         @Override public void remove(String key) {}
-        @Override public void clear() throws BackingStoreException {}
+        @Override public void clear() {}
         @Override public void putInt(String key, int value) {}
         @Override public int getInt(String key, int def) { return 0; }
         @Override public void putLong(String key, long value) {}
@@ -426,24 +426,24 @@ class PreferencesStorageProviderTest {
         @Override public double getDouble(String key, double def) { return 0; }
         @Override public void putByteArray(String key, byte[] value) {}
         @Override public byte[] getByteArray(String key, byte[] def) { return new byte[0]; }
-        @Override public String[] keys() throws BackingStoreException { return new String[0]; }
-        @Override public String[] childrenNames() throws BackingStoreException { return new String[0]; }
+        @Override public String[] keys() { return new String[0]; }
+        @Override public String[] childrenNames() { return new String[0]; }
         @Override public Preferences parent() { return null; }
         @Override public Preferences node(String pathName) { return null; }
-        @Override public boolean nodeExists(String pathName) throws BackingStoreException { return false; }
-        @Override public void removeNode() throws BackingStoreException {}
+        @Override public boolean nodeExists(String pathName) { return false; }
+        @Override public void removeNode() {}
         @Override public String name() { return null; }
         @Override public String absolutePath() { return null; }
         @Override public boolean isUserNode() { return false; }
         @Override public String toString() { return null; }
         @Override public void flush() throws BackingStoreException {}
-        @Override public void sync() throws BackingStoreException {}
+        @Override public void sync() {}
         @Override public void addPreferenceChangeListener(java.util.prefs.PreferenceChangeListener pcl) {}
         @Override public void removePreferenceChangeListener(java.util.prefs.PreferenceChangeListener pcl) {}
         @Override public void addNodeChangeListener(java.util.prefs.NodeChangeListener ncl) {}
         @Override public void removeNodeChangeListener(java.util.prefs.NodeChangeListener ncl) {}
-        @Override public void exportNode(java.io.OutputStream os) throws java.io.IOException, BackingStoreException {}
-        @Override public void exportSubtree(java.io.OutputStream os) throws java.io.IOException, BackingStoreException {}
+        @Override public void exportNode(java.io.OutputStream os) {}
+        @Override public void exportSubtree(java.io.OutputStream os) {}
     }
 
     private enum IdentityEnum {
