@@ -1,9 +1,10 @@
 package eu.oberon.oss.tools.configitems.storage;
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
-import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Function;
 
 /**
  * Represents a configuration item that can be stored and retrieved from a persistent storage. Extends {@link ConfigurationItem}, with additional functionality
@@ -17,17 +18,34 @@ import org.jetbrains.annotations.NotNull;
  * @author TigerLilly64
  * @since 1.0.0
  */
-public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem<I, A>, RegisteredConfigurationItem {
+public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem<I, A, P>, RegisteredConfigurationItem {
 
     /**
-     * Provides access to the configuration item accessor.
+     * Returns the internal key type.
      *
-     * @return A {@code ConfigurationItemAccessor} instance that provides access to type information, key conversion functions, and data mapping between the
-     *         application layer and persistent storage for the configuration item.
+     * @return The internal key type.
      *
      * @since 1.0.0
      */
-    ConfigurationItemAccessor<I, K, A, P> configurationItemAccessor();
+    Class<I> intKeyType();
+
+    /**
+     * Returns the external key type.
+     *
+     * @return The external key type.
+     *
+     * @since 1.0.0
+     */
+    Class<K> extKeyType();
+
+    /**
+     * Returns the conversion function from an internal key to an external key.
+     *
+     * @return The conversion function from an internal key to an external key.
+     *
+     * @since 1.0.0
+     */
+    Function<I, K> toExtKey();
 
     /**
      * Retrieves the storage provider responsible for persisting and retrieving configuration items.
@@ -60,4 +78,6 @@ public interface StorableConfigurationItem<I, K, A, P> extends ConfigurationItem
         storageProvider().storeConfigurationItem(this);
         clearUnsavedChanges();
     }
+
+
 }

@@ -1,8 +1,6 @@
 package eu.oberon.oss.tools.configitems.storage.providers;
 
-import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
-
 
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -56,23 +54,18 @@ public class PreferencesStorageProvider implements StorageProvider {
     }
 
     private <I, K, A, P> void storeTypedConfigurationItem(StorableConfigurationItem<I, K, A, P> storableItem) {
-
-        ConfigurationItemAccessor<I, K, A, P> accessor = storableItem.configurationItemAccessor();
-
-        String key = String.valueOf(accessor.toExtKey().apply(storableItem.getKey()));
-        P value = accessor.toStorageType().apply(storableItem.getCurrentValue());
+        String key = String.valueOf(storableItem.toExtKey().apply(storableItem.getKey()));
+        P value = storableItem.toStorageType().apply(storableItem.getCurrentValue());
 
         performStore(key, value);
     }
 
     private <I, K, A, P> void loadTypedConfigurationItem(StorableConfigurationItem<I, K, A, P> storableItem) {
-        ConfigurationItemAccessor<I, K, A, P> accessor = storableItem.configurationItemAccessor();
+        String key = String.valueOf(storableItem.toExtKey().apply(storableItem.getKey()));
+        P defaultValue = storableItem.toStorageType().apply(storableItem.getDefaultValue());
+        P storedValue = performLoad(key, storableItem.storageType(), defaultValue);
 
-        String key = String.valueOf(accessor.toExtKey().apply(storableItem.getKey()));
-        P defaultValue = accessor.toStorageType().apply(storableItem.getDefaultValue());
-        P storedValue = performLoad(key, accessor.storageType(), defaultValue);
-
-        storableItem.setCurrentValue(accessor.toDataType().apply(storedValue));
+        storableItem.setCurrentValue(storableItem.toDataType().apply(storedValue));
     }
 
     private boolean containsKey(String key) {

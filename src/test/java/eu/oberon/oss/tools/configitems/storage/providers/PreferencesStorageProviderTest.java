@@ -4,7 +4,6 @@ import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilder;
 import eu.oberon.oss.tools.configitems.builders.StorableConfigurationItemBuilderFactory;
-import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.converters.ConvertersRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
@@ -321,43 +320,38 @@ class PreferencesStorageProviderTest {
         private final Object value = new Object();
 
         @Override
-        public ConfigurationItemAccessor<String, String, Object, Object> configurationItemAccessor() {
-            return new ConfigurationItemAccessor<>() {
-                @Override
-                public Class<String> intKeyType() {
-                    return String.class;
-                }
+        public Class<String> intKeyType() {
+            return String.class;
+        }
 
-                @Override
-                public Class<String> extKeyType() {
-                    return String.class;
-                }
+        @Override
+        public Class<String> extKeyType() {
+            return String.class;
+        }
 
-                @Override
-                public Class<Object> applicationDataType() {
-                    return Object.class;
-                }
+        @Override
+        public Function<String, String> toExtKey() {
+            return Function.identity();
+        }
 
-                @Override
-                public Class<Object> storageType() {
-                    return Object.class;
-                }
+        @Override
+        public Class<Object> applicationDataType() {
+            return Object.class;
+        }
 
-                @Override
-                public java.util.function.Function<String, String> toExtKey() {
-                    return key -> key;
-                }
+        @Override
+        public Class<Object> storageType() {
+            return Object.class;
+        }
 
-                @Override
-                public java.util.function.Function<Object, Object> toDataType() {
-                    return value1 -> value1;
-                }
+        @Override
+        public Function<Object, Object> toDataType() {
+            return Function.identity();
+        }
 
-                @Override
-                public java.util.function.Function<Object, Object> toStorageType() {
-                    return value2 -> value2;
-                }
-            };
+        @Override
+        public Function<Object, Object> toStorageType() {
+            return Function.identity();
         }
 
         @Override

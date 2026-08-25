@@ -113,8 +113,8 @@ class DefaultStorableConfigurationItemBuilderTest {
         assertEquals("null-default-value-key", item.getKey());
         assertNull(item.getDefaultValue());
         assertNull(item.getCurrentValue());
-        assertEquals(Integer.class, item.configurationItemAccessor().applicationDataType());
-        assertEquals(Integer.class, item.configurationItemAccessor().storageType());
+        assertEquals(Integer.class, item.applicationDataType());
+        assertEquals(Integer.class, item.storageType());
     }
 
     @Test
@@ -129,8 +129,8 @@ class DefaultStorableConfigurationItemBuilderTest {
         assertEquals("preconfigured-storage-type-key", item.getKey());
         assertEquals(123, item.getDefaultValue());
         assertEquals(123, item.getCurrentValue());
-        assertEquals(Integer.class, item.configurationItemAccessor().applicationDataType());
-        assertEquals(String.class, item.configurationItemAccessor().storageType());
+        assertEquals(Integer.class, item.applicationDataType());
+        assertEquals(String.class, item.storageType());
     }
 
     @Test

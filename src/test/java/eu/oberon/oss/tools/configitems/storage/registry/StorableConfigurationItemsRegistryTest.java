@@ -1,6 +1,5 @@
 package eu.oberon.oss.tools.configitems.storage.registry;
 
-import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.ConfigurationItemKey;
 import eu.oberon.oss.tools.configitems.storage.RegisteredConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
@@ -787,43 +786,38 @@ class StorableConfigurationItemsRegistryTest {
         }
 
         @Override
-        public ConfigurationItemAccessor<String, String, A, A> configurationItemAccessor() {
-            return new ConfigurationItemAccessor<>() {
-                @Override
-                public Class<String> intKeyType() {
-                    return String.class;
-                }
+        public Class<String> intKeyType() {
+            return String.class;
+        }
 
-                @Override
-                public Class<String> extKeyType() {
-                    return String.class;
-                }
+        @Override
+        public Class<String> extKeyType() {
+            return String.class;
+        }
 
-                @Override
-                public Class<A> applicationDataType() {
-                    return valueType;
-                }
+        @Override
+        public Class<A> applicationDataType() {
+            return valueType;
+        }
 
-                @Override
-                public Class<A> storageType() {
-                    return valueType;
-                }
+        @Override
+        public Class<A> storageType() {
+            return valueType;
+        }
 
-                @Override
-                public Function<String, String> toExtKey() {
-                    return Function.identity();
-                }
+        @Override
+        public Function<String, String> toExtKey() {
+            return Function.identity();
+        }
 
-                @Override
-                public Function<A, A> toDataType() {
-                    return Function.identity();
-                }
+        @Override
+        public Function<A, A> toDataType() {
+            return Function.identity();
+        }
 
-                @Override
-                public Function<A, A> toStorageType() {
-                    return Function.identity();
-                }
-            };
+        @Override
+        public Function<A, A> toStorageType() {
+            return Function.identity();
         }
 
         @Override

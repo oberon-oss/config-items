@@ -2,9 +2,7 @@ package eu.oberon.oss.tools.configitems.builders;
 
 
 import eu.oberon.oss.tools.configitems.items.ConfigurationItem;
-import eu.oberon.oss.tools.configitems.items.ConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.items.DefaultConfigurationItem;
-import eu.oberon.oss.tools.configitems.items.DefaultConfigurationItemAccessor;
 import eu.oberon.oss.tools.configitems.storage.DefaultStorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 import eu.oberon.oss.tools.configitems.storage.providers.StorageProvider;
@@ -196,23 +194,9 @@ class DefaultStorableConfigurationItemBuilder<I, K, A, P> implements StorableCon
             }
         }
 
-        ConfigurationItem<I, A> configurationItem = new DefaultConfigurationItem<>(itemID, defaultValue);
+        ConfigurationItem<I, A, P> configurationItem = new DefaultConfigurationItem<>(itemID, defaultValue, applicationDataType, storageType, toDataType, toStorageType);
 
-        ConfigurationItemAccessor<I, K, A, P> configurationItemAccessor = new DefaultConfigurationItemAccessor<>(
-                intKeyType,
-                extKeyType,
-                applicationDataType,
-                storageType,
-                toExtKey,
-                toDataType,
-                toStorageType
-        );
-
-        return new DefaultStorableConfigurationItem<>(
-                configurationItem,
-                configurationItemAccessor,
-                storageProvider
-        );
+        return new DefaultStorableConfigurationItem<>(configurationItem, intKeyType, extKeyType, toExtKey, storageProvider);
     }
 
 

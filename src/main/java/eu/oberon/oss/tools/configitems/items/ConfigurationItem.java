@@ -3,6 +3,7 @@ package eu.oberon.oss.tools.configitems.items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
 import java.util.prefs.Preferences;
 
 /**
@@ -15,7 +16,7 @@ import java.util.prefs.Preferences;
  * @author TigerLilly64
  * @since 1.0.0
  */
-public interface ConfigurationItem<I, A> {
+public interface ConfigurationItem<I, A, P> {
     /**
      * Retrieves the name of the configuration item.
      *
@@ -41,6 +42,42 @@ public interface ConfigurationItem<I, A> {
      * @since 1.0.0
      */
     @Nullable A getCurrentValue();
+
+    /**
+     * Returns the application data type.
+     *
+     * @return The application data type.
+     *
+     * @since 1.0.0
+     */
+    Class<A> applicationDataType();
+
+    /**
+     * Returns the storage type.
+     *
+     * @return The storage type.
+     *
+     * @since 1.0.0
+     */
+    Class<P> storageType();
+
+    /**
+     * Returns the conversion function from a storage type to an application data type.
+     *
+     * @return The conversion function from a storage type to an application data type.
+     *
+     * @since 1.0.0
+     */
+    Function<P, A> toDataType();
+
+    /**
+     * Returns the conversion function from an application data type to a storage type.
+     *
+     * @return The conversion function from an application data type to a storage type.
+     *
+     * @since 1.0.0
+     */
+    Function<A, P> toStorageType();
 
     /**
      * Indicates whether the current value has been changed since the item was created, loaded, or saved.
