@@ -7,13 +7,12 @@
     <parent>
         <groupId>eu.oberon-oss</groupId>
         <artifactId>boms</artifactId>
-        <version>3.25.3</version>
+        <version>3.25.4</version>
     </parent>
 
     <groupId>eu.oberon-oss.tools</groupId>
     <artifactId>config-items</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-
 
     <dependencies>
         <dependency>
@@ -32,5 +31,45 @@
             <artifactId>logback-classic</artifactId>
             <version>1.5.38</version>
         </dependency>
+
+        <dependency>
+            <groupId>eu.oberon-oss.tools</groupId>
+            <artifactId>converters</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.oberon-oss.tools</groupId>
+            <artifactId>resource-bundle-helper</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <sourceFileExcludes>
+                        <!-- Exclude enums that are self-explanatory -->
+                        <sourceFileExclude>**/ConfigItems.java</sourceFileExclude>
+                        <sourceFileExclude>**/ConfigurationItemRegistryEventType.java</sourceFileExclude>
+                    </sourceFileExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>central-snapshots</id>
+            <name>Maven Repository Switchboard</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots</url>
+        </repository>
+    </repositories>
+
 </project>
