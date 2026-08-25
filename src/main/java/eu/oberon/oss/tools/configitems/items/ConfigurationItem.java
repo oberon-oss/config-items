@@ -12,6 +12,7 @@ import java.util.prefs.Preferences;
  *
  * @param <I> The type of the identifier for this configuration item.
  * @param <A> The type of the value held by this configuration item.
+ * @param <P> The storage data type.
  *
  * @author TigerLilly64
  * @since 1.0.0

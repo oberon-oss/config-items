@@ -13,6 +13,7 @@ import static eu.oberon.oss.tools.configitems.ConfigItems.PARAMETER_MUST_NOT_BE_
  *
  * @param <I> The internal key type.
  * @param <A> The application data type.
+ * @param <P> The storage data type.
  *
  * @author TigerLilly64
  * @since 1.0.0
