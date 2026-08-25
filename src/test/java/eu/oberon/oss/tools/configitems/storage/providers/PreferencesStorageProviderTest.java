@@ -264,6 +264,24 @@ class PreferencesStorageProviderTest {
     }
 
     @Test
+    void flushDelegatesToPreferences() {
+        assertDoesNotThrow(() -> storageProvider.flush());
+    }
+
+    @Test
+    void flushThrowsBackingStoreExceptionWhenPreferencesFail() {
+        Preferences failingPreferences = new AbstractPreferencesStub() {
+            @Override
+            public void flush() throws BackingStoreException {
+                throw new BackingStoreException("Test exception");
+            }
+        };
+
+        PreferencesStorageProvider failingProvider = new PreferencesStorageProvider(failingPreferences);
+        assertThrows(BackingStoreException.class, failingProvider::flush);
+    }
+
+    @Test
     void testCustomApplicationDataValueClass() {
         StorableConfigurationItemBuilder<IdentityEnum, String, CustomConfigItem, String> builder;
         StorableConfigurationItem<IdentityEnum, String, CustomConfigItem, String> item;
@@ -389,6 +407,43 @@ class PreferencesStorageProviderTest {
         public void clearUnsavedChanges() {
             // Intentionally empty - it's test code
         }
+    }
+
+    private abstract static class AbstractPreferencesStub extends Preferences {
+        @Override public void put(String key, String value) {}
+        @Override public String get(String key, String def) { return null; }
+        @Override public void remove(String key) {}
+        @Override public void clear() throws BackingStoreException {}
+        @Override public void putInt(String key, int value) {}
+        @Override public int getInt(String key, int def) { return 0; }
+        @Override public void putLong(String key, long value) {}
+        @Override public long getLong(String key, long def) { return 0; }
+        @Override public void putBoolean(String key, boolean value) {}
+        @Override public boolean getBoolean(String key, boolean def) { return false; }
+        @Override public void putFloat(String key, float value) {}
+        @Override public float getFloat(String key, float def) { return 0; }
+        @Override public void putDouble(String key, double value) {}
+        @Override public double getDouble(String key, double def) { return 0; }
+        @Override public void putByteArray(String key, byte[] value) {}
+        @Override public byte[] getByteArray(String key, byte[] def) { return new byte[0]; }
+        @Override public String[] keys() throws BackingStoreException { return new String[0]; }
+        @Override public String[] childrenNames() throws BackingStoreException { return new String[0]; }
+        @Override public Preferences parent() { return null; }
+        @Override public Preferences node(String pathName) { return null; }
+        @Override public boolean nodeExists(String pathName) throws BackingStoreException { return false; }
+        @Override public void removeNode() throws BackingStoreException {}
+        @Override public String name() { return null; }
+        @Override public String absolutePath() { return null; }
+        @Override public boolean isUserNode() { return false; }
+        @Override public String toString() { return null; }
+        @Override public void flush() throws BackingStoreException {}
+        @Override public void sync() throws BackingStoreException {}
+        @Override public void addPreferenceChangeListener(java.util.prefs.PreferenceChangeListener pcl) {}
+        @Override public void removePreferenceChangeListener(java.util.prefs.PreferenceChangeListener pcl) {}
+        @Override public void addNodeChangeListener(java.util.prefs.NodeChangeListener ncl) {}
+        @Override public void removeNodeChangeListener(java.util.prefs.NodeChangeListener ncl) {}
+        @Override public void exportNode(java.io.OutputStream os) throws java.io.IOException, BackingStoreException {}
+        @Override public void exportSubtree(java.io.OutputStream os) throws java.io.IOException, BackingStoreException {}
     }
 
     private enum IdentityEnum {

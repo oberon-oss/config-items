@@ -2,6 +2,8 @@ package eu.oberon.oss.tools.configitems.storage.providers;
 
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 
+import java.util.prefs.BackingStoreException;
+
 /**
  * Interface for managing the storage and retrieval of configuration items in a persistent storage system. This provides generic methods for storing and loading
  * configuration items, as well as validation of allowable key and value types for storage.
@@ -57,4 +59,19 @@ public interface StorageProvider {
      * @since 1.0.0
      */
     boolean isStorageClassTypeAllowed(Class<?> valueClass);
+
+
+    /**
+     * Instructs the registry to flush any pending changes to the underlying storage.
+     * <p>
+     * This method operates on a stable snapshot of the registry. Items registered, removed, or replaced while this method is running are not guaranteed to
+     * affect this invocation.
+     *
+     * @throws UnsupportedOperationException if the storage provider does not support flushing.
+     * @throws BackingStoreException         if an error occurs while flushing the storage.
+     * @since 1.0.0
+     */
+    default void flush() throws BackingStoreException {
+        throw new UnsupportedOperationException("Flushing is not supported by this storage provider implementation.");
+    }
 }

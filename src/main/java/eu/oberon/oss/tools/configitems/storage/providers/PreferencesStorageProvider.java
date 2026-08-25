@@ -3,6 +3,7 @@ package eu.oberon.oss.tools.configitems.storage.providers;
 import eu.oberon.oss.tools.configitems.storage.StorableConfigurationItem;
 
 import java.util.Set;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static eu.oberon.oss.tools.configitems.ConfigItems.TYPE_NOT_SUPPORTED;
@@ -51,6 +52,11 @@ public class PreferencesStorageProvider implements StorageProvider {
     @Override
     public boolean isStorageClassTypeAllowed(Class<?> valueClass) {
         return SUPPORTED_DATA_STORAGE_TYPES.contains(valueClass);
+    }
+
+    @Override
+    public void flush() throws BackingStoreException {
+        preferences.flush();
     }
 
     private <I, K, A, P> void storeTypedConfigurationItem(StorableConfigurationItem<I, K, A, P> storableItem) {
