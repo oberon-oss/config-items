@@ -6,13 +6,22 @@
 
     <parent>
         <groupId>eu.oberon-oss</groupId>
-        <artifactId>boms</artifactId>
-        <version>3.25.4</version>
+        <artifactId>project-settings-parent</artifactId>
+        <version>4.25.3</version>
     </parent>
 
     <groupId>eu.oberon-oss.tools</groupId>
     <artifactId>config-items</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
+
+    <properties>
+        <!--suppress XmlUnresolvedReference -->
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <argLine/>
+        <sonar.projectKey>oberon-oss_code-tables</sonar.projectKey>
+    </properties>
+
+
 
     <dependencies>
         <dependency>
@@ -29,46 +38,44 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.38</version>
         </dependency>
 
         <dependency>
             <groupId>eu.oberon-oss.tools</groupId>
             <artifactId>converters</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.1</version>
         </dependency>
 
         <dependency>
             <groupId>eu.oberon-oss.tools</groupId>
             <artifactId>resource-bundle-helper</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.1.1</version>
         </dependency>
 
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <sourceFileExcludes>
-                        <!-- Exclude enums that are self-explanatory -->
-                        <sourceFileExclude>**/ConfigItems.java</sourceFileExclude>
-                        <sourceFileExclude>**/ConfigurationItemRegistryEventType.java</sourceFileExclude>
-                    </sourceFileExcludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <repositories>
         <repository>
+            <id>nexus-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>https://nexus.oberon-oss.eu/repository/maven-releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>nexus-snapshots</id>
+            <url>https://nexus.oberon-oss.eu/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-            <id>central-snapshots</id>
-            <name>Maven Repository Switchboard</name>
-            <url>https://central.sonatype.com/repository/maven-snapshots</url>
         </repository>
     </repositories>
 

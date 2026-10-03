@@ -32,62 +32,92 @@ import java.util.ResourceBundle;
 @SuppressWarnings({"java:S125", "unused"})
 public enum ConfigItems implements ResourceBundleUtilityEnum {
     /**
+     * Indicates that the internal key type has been set to the class of the item ID.
+     *
      * @since 1.0.0
      */
     INTERNAL_KEY_TYPE_SET,
     /**
+     * Indicates that the default value type does not match the expected storage data type.
+     *
      * @since 1.0.0
      */
     DEFAULT_VALUE_TYPES_DO_NOT_MATCH,
     /**
+     * Indicates that a required type must not be null.
+     *
      * @since 1.0.0
      */
     TYPE_MUST_NOT_BE_NULL,
     /**
+     * Indicates that a required parameter must not be null.
+     *
      * @since 1.0.0
      */
     PARAMETER_MUST_NOT_BE_NULL,
     /**
+     * Indicates that an item ID must be an instance of the configured internal key type.
+     *
      * @since 1.0.0
      */
     TYPE_MUST_BE_INSTANCE_OF,
     /**
+     * Indicates that a default value must be an instance of the configured application data type.
+     *
      * @since 1.0.0
      */
     DEFAULT_VALUE_MUST_BE_INSTANCE_OF,
     /**
+     * Indicates that the application data type has been set to the class of the default value.
+     *
      * @since 1.0.0
      */
     APPLICATION_DATA_TYPE_SET,
     /**
+     * Indicates that the storage type has been set to the class of the default value.
+     *
      * @since 1.0.0
      */
     STORAGE_TYPE_SET_TO,
     /**
+     * Indicates that the specified storage data type is not supported.
+     *
      * @since 1.0.0
      */
     STORAGE_TYPE_IS_NOT_SUPPORTED,
     /**
+     * Indicates that the specified external key type is not supported.
+     *
      * @since 1.0.0
      */
     EXTERNAL_KEY_TYPE_NOT_SUPPORTED,
     /**
+     * Indicates that a required function must not be null.
+     *
      * @since 1.0.0
      */
     FUNCTION_MUST_NOT_BE_NULL,
     /**
+     * Indicates that a specified type is not supported.
+     *
      * @since 1.0.0
      */
     TYPE_NOT_SUPPORTED,
     /**
+     * Indicates that a configuration item key must not be null.
+     *
      * @since 1.0.0
      */
     CONFIGURATION_ITEM_KEY_MUST_NOT_BE_NULL,
     /**
+     * Indicates that a configuration item with the specified key is already registered.
+     *
      * @since 1.0.0
      */
     CONFIGURATION_ALREADY_DEFINED,
     /**
+     * Indicates that no configuration item is registered for the specified key.
+     *
      * @since 1.0.0
      */
     NO_CONFIGURATION_ITEM_REGISTERED,
@@ -96,6 +126,11 @@ public enum ConfigItems implements ResourceBundleUtilityEnum {
 
     final String propertyName;
 
+    /**
+     * Default constructor.
+     *
+     * @since 1.0.0
+     */
     ConfigItems() {
         this.propertyName = name().toLowerCase().replace("_", ".");
     }
@@ -137,6 +172,14 @@ public enum ConfigItems implements ResourceBundleUtilityEnum {
 
     private static EnumProvider<?, ConfigItems> _provider;
 
+    /**
+     * Initializes the {@link EnumProvider} for {@link ConfigItems}.
+     *
+     * @param provider the provider instance to set
+     * @param <L>      the logging level type
+     *
+     * @since 1.0.0
+     */
     @SuppressWarnings("unused")
     public static <L> void init(EnumProvider<L, ConfigItems> provider) {
         _provider = provider;
@@ -151,8 +194,25 @@ public enum ConfigItems implements ResourceBundleUtilityEnum {
         );
     }
 
+
+    /**
+     * Provides resource bundle support specific to configuration items, including a key prefix for translations and access to localized messages from the
+     * resource bundle.
+     *
+     * @author TigerLilly64
+     * @since 1.0.0
+     */
     public static class ConfigItemsResourceBundleHelperProvider implements ResourceBundleHelperProvider {
         private final ResourceBundle resourceBundle = ResourceBundle.getBundle("i18n-config-items");
+
+        /**
+         * Constructs a new instance of {@link ConfigItemsResourceBundleHelperProvider}.
+         *
+         * @since 1.0.0
+         */
+        public ConfigItemsResourceBundleHelperProvider() {
+            // keep Javadoc happy
+        }
 
         @Override
         public @NotNull ResourceBundle getResourceBundle() {
