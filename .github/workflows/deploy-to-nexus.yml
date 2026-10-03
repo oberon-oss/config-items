@@ -3,12 +3,12 @@ name: CI/CD Pipeline
 on:
     push:
         branches:
-            - master
+            - main
         tags:
             - 'v*.*.*'
     pull_request:
         branches:
-            - master
+            - main
             - 'feature/*'
             - 'bug-fixes/*'
     workflow_dispatch:
