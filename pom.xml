@@ -18,7 +18,7 @@
         <!--suppress XmlUnresolvedReference -->
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <argLine/>
-        <sonar.projectKey>oberon-oss_code-tables</sonar.projectKey>
+        <sonar.projectKey>oberon-oss_config-items</sonar.projectKey>
     </properties>
 
 
